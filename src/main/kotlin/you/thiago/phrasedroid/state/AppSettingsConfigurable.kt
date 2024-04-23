@@ -12,13 +12,12 @@ import javax.swing.JComponent
 internal class AppSettingsConfigurable : Configurable {
     private var mySettingsComponent: AppSettingsComponent? = null
 
-    // A default constructor with no arguments is required because this implementation
     override fun getDisplayName(): @Nls(capitalization = Nls.Capitalization.Title) String {
-        return "SDK: Application Settings Example"
+        return "PhraseDroid Settings"
     }
 
     fun preferredFocusedComponent(): JComponent {
-        return mySettingsComponent!!.preferredFocusedComponent
+        return mySettingsComponent?.preferredFocusedComponent!!
     }
 
     @Nullable
@@ -29,21 +28,19 @@ internal class AppSettingsConfigurable : Configurable {
 
     override fun isModified(): Boolean {
         val settings: MyState = MyState().getInstance().state
-        var modified = mySettingsComponent!!.userNameText != settings.userId
-        modified = modified or (mySettingsComponent!!.ideaUserStatus != settings.ideaStatus)
+        val modified = mySettingsComponent?.settingsFilePath != settings.settingsFilePath
+
         return modified
     }
 
     override fun apply() {
         val settings: MyState = MyState().getInstance().state
-        settings.userId = mySettingsComponent!!.userNameText!!
-        settings.ideaStatus = mySettingsComponent!!.ideaUserStatus
+        settings.settingsFilePath = mySettingsComponent?.settingsFilePath ?: String()
     }
 
     override fun reset() {
         val settings: MyState = MyState().getInstance().state
-        mySettingsComponent!!.userNameText = settings.userId
-        mySettingsComponent!!.ideaUserStatus = settings.ideaStatus
+        mySettingsComponent?.settingsFilePath = settings.settingsFilePath
     }
 
     override fun disposeUIResources() {

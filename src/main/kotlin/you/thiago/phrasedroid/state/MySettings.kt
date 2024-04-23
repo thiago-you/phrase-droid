@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NotNull
 class MySettings : SimplePersistentStateComponent<MyState>(MyState())
 
 class MyState : BaseState() {
-    var userId: String = "John Q. Public"
-    var ideaStatus: Boolean = false
+    var settingsFilePath: String = ""
 
     fun getInstance(): MySettings {
         return ApplicationManager.getApplication().getService(MySettings::class.java)

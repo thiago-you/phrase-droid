@@ -30,7 +30,7 @@
                 parentId="tools"
                 instance="you.thiago.phrasedroid.state.AppSettingsConfigurable"
                 id="you.thiago.phrasedroid.state.AppSettingsConfigurable"
-                displayName="SDK: Application Settings Example"/>
+                displayName="PhraseDroid Settings"/>
     </extensions>
 
     <actions>
