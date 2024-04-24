@@ -5,7 +5,6 @@ import com.intellij.openapi.components.*
 import com.intellij.util.xmlb.XmlSerializerUtil
 import org.jetbrains.annotations.NotNull
 
-
 @Service
 @State(
     name = "you.thiago.phrasedroid.state.MySettings",
@@ -15,6 +14,7 @@ class MySettings : SimplePersistentStateComponent<MyState>(MyState())
 
 class MyState : BaseState() {
     var settingsFilePath: String = ""
+    var content: String = ""
 
     fun getInstance(): MySettings {
         return ApplicationManager.getApplication().getService(MySettings::class.java)
