@@ -42,8 +42,10 @@ class WriteTranslationsAction: AnAction() {
 
     private fun writeResourceFiles(file: VirtualFile, resource: ResourceFile) {
         file.findDocument()?.also { document ->
-            val lastLineStartOffset = document.getLineStartOffset(document.lineCount - 1)
-            document.insertString(lastLineStartOffset, resource.content)
+            if (!document.text.contains(resource.name)) {
+                val lastLineStartOffset = document.getLineStartOffset(document.lineCount - 1)
+                document.insertString(lastLineStartOffset, resource.content)
+            }
         }
     }
 }
