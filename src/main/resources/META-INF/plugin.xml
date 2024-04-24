@@ -26,11 +26,18 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService
                 serviceImplementation="you.thiago.phrasedroid.state.MySettings"/>
+
         <applicationConfigurable
                 parentId="tools"
                 instance="you.thiago.phrasedroid.state.AppSettingsConfigurable"
                 id="you.thiago.phrasedroid.state.AppSettingsConfigurable"
                 displayName="PhraseDroid Settings"/>
+
+        <toolWindow id="PhraseDroid"
+                    secondary="true"
+                    icon="AllIcons.Toolwindows.WebToolWindow"
+                    anchor="right"
+                    factoryClass="you.thiago.phrasedroid.ui.SidebarWindow"/>
     </extensions>
 
     <actions>

@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.wm.ToolWindowManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -15,6 +16,7 @@ import you.thiago.phrasedroid.data.ApiSettings
 import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.network.Api
 import you.thiago.phrasedroid.state.MyState
+import you.thiago.phrasedroid.ui.SidebarWindowContent
 import you.thiago.phrasedroid.util.FileLoader
 import you.thiago.phrasedroid.util.JsonUtil
 import java.nio.file.Paths
@@ -28,20 +30,28 @@ class MyDemoAction: AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
+        val project = e.project ?: return
+
         val apiSettings = getJsonData(e)
 
         if (apiSettings != null) {
+            MyState().getInstance().state.isLoading = true
+
             fetchApiData(e, apiSettings)
 
-            Messages.showMessageDialog(
-                e.project,
+            val confirmed = Messages.showYesNoDialog(
+                project,
                 "Loading translations...",
                 "PhraseDroid",
                 Messages.getInformationIcon()
             )
+
+            if (confirmed == Messages.YES) {
+                openToolWindow(project)
+            }
         } else {
             Messages.showMessageDialog(
-                e.project,
+                project,
                 "Failed to read API settings from file",
                 "PhraseDroid",
                 Messages.getErrorIcon()
@@ -112,5 +122,14 @@ class MyDemoAction: AnAction() {
     private fun writeTranslations(e: AnActionEvent, list: List<Translation>) {
         MyState().getInstance().state.translations = list
         ActionUtil.invokeAction(WriteTranslationsAction(), e.dataContext, e.place, null, null)
+    }
+
+    private fun openToolWindow(project: Project) {
+        val toolWindowManager = ToolWindowManager.getInstance(project)
+        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid")
+
+        toolWindow?.show {
+//            toolWindow.refreshContent()
+        }
     }
 }

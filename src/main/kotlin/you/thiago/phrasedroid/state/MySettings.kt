@@ -16,6 +16,7 @@ class MySettings : SimplePersistentStateComponent<MyState>(MyState())
 class MyState : BaseState() {
     var settingsFilePath: String = ""
     var translations: List<Translation> = emptyList()
+    var isLoading: Boolean = false
 
     fun getInstance(): MySettings {
         return ApplicationManager.getApplication().getService(MySettings::class.java)
