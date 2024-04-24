@@ -15,21 +15,19 @@ class Api {
     private val projectKeyEndpoint = "/v2/projects/%s/keys?q=name:%s"
 
     suspend fun fetchApiData(apiSettings: ApiSettings): String? {
-        return withContext(Dispatchers.IO) {
-            try {
-                val response: HttpResponse = HttpClientFactory.client.request(buildEndpoint(apiSettings)) {
-                    headers {
-                        append(HttpHeaders.Authorization, "Bearer ${apiSettings.key}")
-                        append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentEmail})")
-                        append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentUrl})")
-                    }
+        return try {
+            val response: HttpResponse = HttpClientFactory.client.request(buildEndpoint(apiSettings)) {
+                headers {
+                    append(HttpHeaders.Authorization, "Basic ${apiSettings.key}")
+                    append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentEmail})")
+                    append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentUrl})")
                 }
-
-                response.body() as String
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
             }
+
+            response.body() as String
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 

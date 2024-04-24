@@ -4,15 +4,18 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import you.thiago.phrasedroid.data.ApiSettings
 import you.thiago.phrasedroid.network.Api
 import you.thiago.phrasedroid.state.MyState
 import you.thiago.phrasedroid.util.FileLoader
 import you.thiago.phrasedroid.util.JsonUtil
+import java.nio.file.Paths
 
 
 class MyDemoAction: AnAction() {
@@ -22,7 +25,7 @@ class MyDemoAction: AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        val apiSettings = getJsonData()
+        val apiSettings = getJsonData(e)
 
         if (apiSettings != null) {
             someFunctionToCallApi(e, apiSettings)
@@ -43,8 +46,12 @@ class MyDemoAction: AnAction() {
         }
     }
 
-    private fun getJsonData(): ApiSettings? {
+    private fun getJsonData(e: AnActionEvent): ApiSettings? {
         val filePath = MyState().getInstance().state.settingsFilePath
+
+        if (filePath.isBlank()) {
+            return getVirtualFileByProjectRelativePath(e.project!!)
+        }
 
         val file = FileLoader.getVirtualFileByPath(filePath)
 
@@ -55,25 +62,34 @@ class MyDemoAction: AnAction() {
         return null
     }
 
-    fun someFunctionToCallApi(e: AnActionEvent, apiSettings: ApiSettings) {
-        GlobalScope.launch(PluginCoroutineExceptionHandler.handler) {
-            val data = Api().fetchApiData(apiSettings)
-            println(data)
+    private fun getVirtualFileByProjectRelativePath(project: Project): ApiSettings? {
+        // Get the base directory of the project
+        val basePath = project.basePath ?: return null
 
-            Messages.showMessageDialog(
-                e.project,
-                "API response: $data",
-                "API Settings",
-                Messages.getInformationIcon()
-            )
+        // Construct the absolute path
+        val absolutePath = Paths.get(basePath, "phrase-droid-settings.json").toString()
+
+        val file = FileLoader.getVirtualFileByPath(absolutePath)
+
+        if (file != null) {
+            return JsonUtil.readConfig(file)
         }
-    }
-}
 
-object PluginCoroutineExceptionHandler {
-    val handler = CoroutineExceptionHandler { _, throwable ->
-        ApplicationManager.getApplication().invokeLater {
-            throwable.printStackTrace()
+        return null
+    }
+
+    fun someFunctionToCallApi(e: AnActionEvent, apiSettings: ApiSettings) {
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
+            val data = Api().fetchApiData(apiSettings)
+
+            ApplicationManager.getApplication().invokeLater {
+                Messages.showMessageDialog(
+                    e.project,
+                    "API response: $data",
+                    "API Settings",
+                    Messages.getInformationIcon()
+                )
+            }
         }
     }
 }

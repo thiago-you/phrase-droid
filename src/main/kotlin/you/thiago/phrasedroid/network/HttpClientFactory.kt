@@ -10,13 +10,7 @@ import io.ktor.serialization.jackson.*
 object HttpClientFactory {
     val client = HttpClient(CIO) {
         install(ContentNegotiation) {
-            jackson {
-                enable(SerializationFeature.INDENT_OUTPUT)
-                disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                writerWithDefaultPrettyPrinter()
-                setDefaultLeniency(true)
-                coercionConfigDefaults()
-            }
+            jackson()
         }
     }
 }

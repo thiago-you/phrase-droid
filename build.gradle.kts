@@ -58,3 +58,7 @@ tasks {
         token.set(System.getenv("PUBLISH_TOKEN"))
     }
 }
+
+configurations.all {
+    exclude("org.slf4j", "slf4j-api")
+}
