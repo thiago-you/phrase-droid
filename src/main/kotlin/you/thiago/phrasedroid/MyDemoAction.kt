@@ -4,17 +4,22 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.editor.impl.DocumentImpl
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.vfs.VfsUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import you.thiago.phrasedroid.data.ApiSettings
+import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.network.Api
 import you.thiago.phrasedroid.state.MyState
 import you.thiago.phrasedroid.util.FileLoader
 import you.thiago.phrasedroid.util.JsonUtil
+import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
 
@@ -90,10 +95,12 @@ class MyDemoAction: AnAction() {
                     val list = JsonUtil.readTranslations(data)
 
                     if (list?.isNotEmpty() == true) {
+                        writeTranslations(e, list)
+
                         ApplicationManager.getApplication().invokeLater {
                             Messages.showMessageDialog(
                                 e.project,
-                                "API response: ${list.size}",
+                                "Translations added!",
                                 "API Settings",
                                 Messages.getInformationIcon()
                             )
@@ -101,15 +108,28 @@ class MyDemoAction: AnAction() {
                     }
                 }
             }
+        }
+    }
 
-            ApplicationManager.getApplication().invokeLater {
-                Messages.showMessageDialog(
-                    e.project,
-                    "API response: $response",
-                    "API Settings",
-                    Messages.getInformationIcon()
-                )
+    private fun writeTranslations(e: AnActionEvent, list: List<Translation>) {
+        val project = e.project ?: return
+
+        val content = buildStringContent(list.first().content)
+
+        // Specify the path of the file where you want to insert the content
+        val filePath = project.basePath + "/strings.xml"
+
+        // Run the write command action to insert content into the file
+        WriteCommandAction.runWriteCommandAction(project) {
+            val file = VfsUtil.findFileByIoFile(java.io.File(filePath), true)
+
+            if (file != null && file.isValid) {
+                file.setBinaryContent(DocumentImpl(content).text.toByteArray(StandardCharsets.UTF_8))
             }
         }
+    }
+
+    private fun buildStringContent(content: String): String {
+        return "<string name=\"name\">$content</string>".format(content)
     }
 }
