@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.util.xmlb.XmlSerializerUtil
 import org.jetbrains.annotations.NotNull
+import you.thiago.phrasedroid.data.Translation
 
 @Service
 @State(
@@ -14,7 +15,7 @@ class MySettings : SimplePersistentStateComponent<MyState>(MyState())
 
 class MyState : BaseState() {
     var settingsFilePath: String = ""
-    var content: String = ""
+    var translations: List<Translation> = emptyList()
 
     fun getInstance(): MySettings {
         return ApplicationManager.getApplication().getService(MySettings::class.java)

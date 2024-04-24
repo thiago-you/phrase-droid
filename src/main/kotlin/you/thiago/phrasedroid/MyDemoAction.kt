@@ -110,7 +110,7 @@ class MyDemoAction: AnAction() {
     }
 
     private fun writeTranslations(e: AnActionEvent, list: List<Translation>) {
-        MyState().getInstance().state.content = list.first().content
-        ActionUtil.invokeAction(SecondaryAction(), e.dataContext, e.place, null, null)
+        MyState().getInstance().state.translations = list
+        ActionUtil.invokeAction(WriteTranslationsAction(), e.dataContext, e.place, null, null)
     }
 }
