@@ -28,7 +28,7 @@ class MyDemoAction: AnAction() {
         val apiSettings = getJsonData(e)
 
         if (apiSettings != null) {
-            someFunctionToCallApi(e, apiSettings)
+            fetchApiData(e, apiSettings)
 
             Messages.showMessageDialog(
                 e.project,
@@ -78,14 +78,34 @@ class MyDemoAction: AnAction() {
         return null
     }
 
-    fun someFunctionToCallApi(e: AnActionEvent, apiSettings: ApiSettings) {
+    private fun fetchApiData(e: AnActionEvent, apiSettings: ApiSettings) {
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-            val data = Api().fetchApiData(apiSettings)
+            val response = Api().getTranslationKeyId(apiSettings)
+
+            if (!response.isNullOrBlank()) {
+                val translationKey = JsonUtil.readTranslationKeyInfo(response)
+                val data = Api().getTranslations(apiSettings, translationKey?.id ?: String())
+
+                if (!data.isNullOrBlank()) {
+                    val list = JsonUtil.readTranslations(data)
+
+                    if (list?.isNotEmpty() == true) {
+                        ApplicationManager.getApplication().invokeLater {
+                            Messages.showMessageDialog(
+                                e.project,
+                                "API response: ${list.size}",
+                                "API Settings",
+                                Messages.getInformationIcon()
+                            )
+                        }
+                    }
+                }
+            }
 
             ApplicationManager.getApplication().invokeLater {
                 Messages.showMessageDialog(
                     e.project,
-                    "API response: $data",
+                    "API response: $response",
                     "API Settings",
                     Messages.getInformationIcon()
                 )
