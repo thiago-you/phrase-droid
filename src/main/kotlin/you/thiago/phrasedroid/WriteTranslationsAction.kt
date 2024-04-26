@@ -66,7 +66,7 @@ class WriteTranslationsAction: AnAction() {
 
         val content = ContentFactory
             .getInstance()
-            .createContent(loadingContent.contentPanel, "PhraseDroid", false)
+            .createContent(loadingContent.contentPanel, "Confirmation", false)
 
         toolWindow.contentManager.removeAllContents(false)
         toolWindow.contentManager.addContent(content)
