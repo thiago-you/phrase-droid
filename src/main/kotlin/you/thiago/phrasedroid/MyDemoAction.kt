@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.ui.content.ContentFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,7 +17,7 @@ import you.thiago.phrasedroid.data.ApiSettings
 import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.network.Api
 import you.thiago.phrasedroid.state.MyState
-import you.thiago.phrasedroid.ui.SidebarWindowContent
+import you.thiago.phrasedroid.ui.LoadingContent
 import you.thiago.phrasedroid.util.FileLoader
 import you.thiago.phrasedroid.util.JsonUtil
 import java.nio.file.Paths
@@ -126,10 +127,16 @@ class MyDemoAction: AnAction() {
 
     private fun openToolWindow(project: Project) {
         val toolWindowManager = ToolWindowManager.getInstance(project)
-        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid")
+        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid") ?: return
 
-        toolWindow?.show {
-//            toolWindow.refreshContent()
-        }
+        val loadingContent = LoadingContent()
+
+        val content = ContentFactory
+            .getInstance()
+            .createContent(loadingContent.contentPanel, "PhraseDroid", false)
+
+        toolWindow.contentManager.removeAllContents(false)
+        toolWindow.contentManager.addContent(content)
+        toolWindow.show()
     }
 }
