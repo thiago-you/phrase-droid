@@ -18,14 +18,16 @@ object FileMapper {
         val filename = "values$suffix/strings.xml"
         val filePath = "/app/src/main/res/$filename"
 
-        val stringResName = getTranslationName(translation.key.name)
-        val translationContent = getTranslationContent(stringResName, translation.content)
+        val translationName = translation.key.name
+        val translationContent = getTranslationContent(translationName, translation.content)
 
         return ResourceFile(
             filename = filename,
             filePath = filePath,
-            name = stringResName,
-            content = translationContent
+            name = translationName,
+            content = translationContent,
+            locale = translation.locale.code,
+            translation = translation.content
         )
     }
 
@@ -53,11 +55,7 @@ object FileMapper {
         }
     }
 
-    private fun getTranslationName(name: String): String {
-        return "string name=\"%s\"".format(name)
-    }
-
-    private fun getTranslationContent(stringResName: String, content: String): String {
-        return "\t<%s>%s</string>\n".format(stringResName, content)
+    private fun getTranslationContent(name: String, content: String): String {
+        return "\t<string name=\"%s\">%s</string>\n".format(name, content)
     }
 }

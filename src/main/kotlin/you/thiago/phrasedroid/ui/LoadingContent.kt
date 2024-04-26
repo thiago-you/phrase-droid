@@ -39,7 +39,6 @@ class LoadingContent {
         val progressPanel = JPanel()
         progressPanel.add(progressBar)
 
-
         simulateProgress(progressBar)
 
         return progressPanel

@@ -5,4 +5,6 @@ data class ResourceFile(
     val filePath: String,
     val name: String,
     val content: String,
+    val locale: String,
+    val translation: String
 )

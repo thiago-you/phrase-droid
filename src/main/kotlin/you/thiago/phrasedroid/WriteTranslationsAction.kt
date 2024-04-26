@@ -8,8 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDocument
+import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.ui.content.ContentFactory
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.state.MyState
+import you.thiago.phrasedroid.ui.TranslationsContent
 import you.thiago.phrasedroid.util.FileMapper
 
 class WriteTranslationsAction: AnAction() {
@@ -21,14 +24,8 @@ class WriteTranslationsAction: AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        WriteCommandAction.runWriteCommandAction(project) {
-            getResourceFilesList().forEach { resource ->
-                val file = loadFile(project, resource.filePath)
-
-                if (file != null && file.isValid) {
-                    writeResourceFiles(file, resource)
-                }
-            }
+        getResourceFilesList().also { list ->
+            displayTranslations(project, list)
         }
     }
 
@@ -40,6 +37,18 @@ class WriteTranslationsAction: AnAction() {
         return VfsUtil.findFileByIoFile(java.io.File(project.basePath + filePath), true)
     }
 
+    private fun writeResources(project: Project, resourceFiles: List<ResourceFile>) {
+        WriteCommandAction.runWriteCommandAction(project) {
+            resourceFiles.forEach { resource ->
+                val file = loadFile(project, resource.filePath)
+
+                if (file != null && file.isValid) {
+                    writeResourceFiles(file, resource)
+                }
+            }
+        }
+    }
+
     private fun writeResourceFiles(file: VirtualFile, resource: ResourceFile) {
         file.findDocument()?.also { document ->
             if (!document.text.contains(resource.name)) {
@@ -47,5 +56,20 @@ class WriteTranslationsAction: AnAction() {
                 document.insertString(lastLineStartOffset, resource.content)
             }
         }
+    }
+
+    private fun displayTranslations(project: Project, resourceFiles: List<ResourceFile>) {
+        val toolWindowManager = ToolWindowManager.getInstance(project)
+        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid") ?: return
+
+        val loadingContent = TranslationsContent(resourceFiles)
+
+        val content = ContentFactory
+            .getInstance()
+            .createContent(loadingContent.contentPanel, "PhraseDroid", false)
+
+        toolWindow.contentManager.removeAllContents(false)
+        toolWindow.contentManager.addContent(content)
+        toolWindow.show()
     }
 }

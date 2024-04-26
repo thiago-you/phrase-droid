@@ -38,8 +38,6 @@ class MyDemoAction: AnAction() {
         if (apiSettings != null) {
             MyState().getInstance().state.isLoading = true
 
-            fetchApiData(e, apiSettings)
-
             val confirmed = Messages.showYesNoDialog(
                 project,
                 "Loading translations...",
@@ -48,7 +46,8 @@ class MyDemoAction: AnAction() {
             )
 
             if (confirmed == Messages.YES) {
-                openToolWindow(project)
+                displayLoadingWindow(project)
+                fetchApiData(e, apiSettings)
             }
         } else {
             Messages.showMessageDialog(
@@ -106,13 +105,6 @@ class MyDemoAction: AnAction() {
                     if (list?.isNotEmpty() == true) {
                         ApplicationManager.getApplication().invokeLater {
                             writeTranslations(e, list)
-
-                            Messages.showMessageDialog(
-                                e.project,
-                                "Translations added!",
-                                "PhraseDroid",
-                                Messages.getInformationIcon()
-                            )
                         }
                     }
                 }
@@ -125,7 +117,7 @@ class MyDemoAction: AnAction() {
         ActionUtil.invokeAction(WriteTranslationsAction(), e.dataContext, e.place, null, null)
     }
 
-    private fun openToolWindow(project: Project) {
+    private fun displayLoadingWindow(project: Project) {
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow = toolWindowManager.getToolWindow("PhraseDroid") ?: return
 
