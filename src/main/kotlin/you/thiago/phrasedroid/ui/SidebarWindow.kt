@@ -11,17 +11,7 @@ class SidebarWindow: ToolWindowFactory {
 
         val content = ContentFactory
             .getInstance()
-            .createContent(sidebarWindowContent.contentPanel, "PhraseDroid", false)
-
-        toolWindow.contentManager.addContent(content)
-    }
-
-    fun refreshContent(toolWindow: ToolWindow) {
-        val sidebarWindowContent = SidebarWindowContent(toolWindow)
-
-        val content = ContentFactory
-            .getInstance()
-            .createContent(sidebarWindowContent.contentPanel, "PhraseDroid", false)
+            .createContent(sidebarWindowContent.contentPanel, "", false)
 
         toolWindow.contentManager.addContent(content)
     }

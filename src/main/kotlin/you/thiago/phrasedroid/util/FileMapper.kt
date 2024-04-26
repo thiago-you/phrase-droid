@@ -10,6 +10,7 @@ object FileMapper {
         return translations
             .map { mapToResourceFile(it) }
             .distinctBy { it.filename }
+            .sortedBy { it.locale }
     }
 
     private fun mapToResourceFile(translation: Translation): ResourceFile {
