@@ -1,10 +1,11 @@
 package you.thiago.phrasedroid.data
 
 data class ResourceFile(
-    val filename: String,
-    val filePath: String,
-    val name: String,
-    val content: String,
-    val locale: String,
-    val translation: String
+    var filename: String,
+    var filePath: String,
+    var name: String,
+    var content: String,
+    var locale: String,
+    var translation: String,
+    var sourceTranslation: String,
 )

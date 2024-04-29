@@ -5,45 +5,32 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
 import you.thiago.phrasedroid.data.ResourceFile
+import you.thiago.phrasedroid.util.TranslationUtil
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Font
-import javax.swing.BorderFactory
-import javax.swing.BoxLayout
-import javax.swing.JButton
-import javax.swing.JPanel
+import javax.swing.*
 
-class TranslationsContent(translations: List<ResourceFile>) {
+class TranslationsContent(private var translations: List<ResourceFile>) {
 
     val contentPanel: JPanel = JPanel()
+
+    private val scrollablePanel: JBScrollPane = buildScrollablePanel(translations)
+    private val controlsPanel: JPanel = buildControlsPanel()
+
+    private var hasEscapedData = false
 
     init {
         contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
         contentPanel.border = BorderFactory.createEmptyBorder(40, 0, 0, 0)
-        contentPanel.add(buildControlsPanel())
-        contentPanel.add(buildScrollablePanel(translations))
+        contentPanel.add(controlsPanel)
+        contentPanel.add(scrollablePanel)
     }
 
     private fun buildControlsPanel(): JPanel {
         val controlsPanel = JPanel()
-        controlsPanel.layout = BorderLayout()
-        controlsPanel.border = BorderFactory.createEmptyBorder(0, 20, 0, 20)
-
-        val leftButtonPanel = JPanel(FlowLayout(FlowLayout.LEFT))
-        val escapeDataButton = JButton("Escape Data [CDATA]")
-        escapeDataButton.preferredSize = Dimension(220, 40)
-        escapeDataButton.addActionListener { _ -> }
-        leftButtonPanel.add(escapeDataButton)
-
-        val rightButtonPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
-        val confirmTranslationButton = JButton("Apply Translations")
-        confirmTranslationButton.preferredSize = Dimension(220, 40)
-        confirmTranslationButton.addActionListener { _ ->  }
-        rightButtonPanel.add(confirmTranslationButton)
-
-        controlsPanel.add(leftButtonPanel, BorderLayout.WEST)
-        controlsPanel.add(rightButtonPanel, BorderLayout.EAST)
+        controlsPanel.add(buildControlsPanelContent())
 
         return controlsPanel
     }
@@ -51,9 +38,72 @@ class TranslationsContent(translations: List<ResourceFile>) {
     private fun buildScrollablePanel(translations: List<ResourceFile>): JBScrollPane {
         val scrollablePanel = JBScrollPane()
         scrollablePanel.viewport.add(buildTranslationsContent(translations))
-        scrollablePanel.border = BorderFactory.createEmptyBorder(50, 20, 80, 20)
+        scrollablePanel.border = BorderFactory.createEmptyBorder(30, 20, 80, 20)
 
         return scrollablePanel
+    }
+
+    private fun updateControlsPanel() {
+        val updatePanel = buildControlsPanelContent()
+
+        SwingUtilities.invokeLater {
+            controlsPanel.removeAll()
+            controlsPanel.add(updatePanel)
+            controlsPanel.revalidate()
+            controlsPanel.repaint()
+        }
+    }
+
+    private fun updateScrollablePanel(translations: List<ResourceFile>) {
+        val updatedPanel = buildTranslationsContent(translations)
+
+        SwingUtilities.invokeLater {
+            scrollablePanel.viewport.remove(0)
+            scrollablePanel.viewport.add(updatedPanel)
+            scrollablePanel.viewport.revalidate()
+            scrollablePanel.viewport.repaint()
+        }
+    }
+
+    private fun buildControlsPanelContent(): JPanel {
+        val controlsPanel = JPanel()
+        controlsPanel.layout = BorderLayout()
+        controlsPanel.border = BorderFactory.createEmptyBorder(0, 20, 0, 20)
+
+        val escapeDataButtonLabel = if (!hasEscapedData) {
+            "Add Escape [CDATA]"
+        } else {
+            "Remove Escape [CDATA]"
+        }
+
+        val leftButtonPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+        val escapeDataButton = JButton(escapeDataButtonLabel)
+        escapeDataButton.preferredSize = Dimension(220, 40)
+        escapeDataButton.addActionListener { _ ->
+            translations = if (hasEscapedData) {
+                TranslationUtil.removeTranslationsEscape(translations)
+            } else {
+                TranslationUtil.escapeTranslations(translations)
+            }
+
+            hasEscapedData = !hasEscapedData
+
+            updateScrollablePanel(translations)
+            updateControlsPanel()
+        }
+
+        leftButtonPanel.add(escapeDataButton)
+
+        val rightButtonPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
+        val confirmTranslationButton = JButton("Apply Translations")
+        confirmTranslationButton.preferredSize = Dimension(220, 40)
+        confirmTranslationButton.addActionListener { _ -> }
+        rightButtonPanel.add(confirmTranslationButton)
+
+        controlsPanel.add(leftButtonPanel, BorderLayout.WEST)
+        controlsPanel.add(rightButtonPanel, BorderLayout.EAST)
+
+        return controlsPanel
     }
 
     private fun buildTranslationsContent(translations: List<ResourceFile>): JPanel {

@@ -7,10 +7,24 @@ import you.thiago.phrasedroid.data.Translation
 object FileMapper {
 
     fun getResourceFilesList(translations: List<Translation>): List<ResourceFile> {
-        return translations
+        val sortedList = translations
             .map { mapToResourceFile(it) }
             .distinctBy { it.filename }
             .sortedBy { it.locale }
+            .toMutableList()
+
+        val firstItem  = sortedList.find { it.locale == "pt-BR" }
+
+        firstItem?.also {
+            val firstItemIndex = sortedList.indexOf(firstItem)
+
+            if (firstItemIndex != -1) {
+                sortedList.removeAt(firstItemIndex)
+                sortedList.add(0, firstItem)
+            }
+        }
+
+        return sortedList
     }
 
     private fun mapToResourceFile(translation: Translation): ResourceFile {
@@ -20,7 +34,10 @@ object FileMapper {
         val filePath = "/app/src/main/res/$filename"
 
         val translationName = translation.key.name
-        val translationContent = getTranslationContent(translationName, translation.content)
+
+        val content = TranslationUtil.escapeSingleQuote(translation.content)
+
+        val translationContent = getTranslationContent(translationName, content)
 
         return ResourceFile(
             filename = filename,
@@ -28,7 +45,8 @@ object FileMapper {
             name = translationName,
             content = translationContent,
             locale = translation.locale.code,
-            translation = translation.content
+            translation = translation.content,
+            sourceTranslation = translation.content
         )
     }
 
