@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.util.xmlb.XmlSerializerUtil
 import org.jetbrains.annotations.NotNull
+import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.data.Translation
 
 @Service
@@ -15,7 +16,7 @@ class MySettings : SimplePersistentStateComponent<MyState>(MyState())
 
 class MyState : BaseState() {
     var settingsFilePath: String = ""
-    var translations: List<Translation> = emptyList()
+    var translations: List<ResourceFile> = emptyList()
     var isLoading: Boolean = false
 
     fun getInstance(): MySettings {

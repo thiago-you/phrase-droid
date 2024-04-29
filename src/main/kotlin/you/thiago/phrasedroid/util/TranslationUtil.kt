@@ -8,6 +8,7 @@ object TranslationUtil {
         return translations.map { item ->
             return@map item.apply {
                 translation = escapeHtml(translation)
+                content = getTranslationContent(name, translation)
             }
         }
     }
@@ -32,5 +33,9 @@ object TranslationUtil {
         escapedContent = escapedContent.replace("\\", "\\\\\\\\")
         escapedContent = escapedContent.replace("&", "\\&amp;")
         return "<![CDATA[$escapedContent]]>"
+    }
+
+    private fun getTranslationContent(name: String, content: String): String {
+        return "\t<string name=\"%s\">%s</string>\n".format(name, content)
     }
 }

@@ -1,10 +1,15 @@
 package you.thiago.phrasedroid.ui
 
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
+import you.thiago.phrasedroid.WriteTranslationsAction
 import you.thiago.phrasedroid.data.ResourceFile
+import you.thiago.phrasedroid.state.MyState
 import you.thiago.phrasedroid.util.TranslationUtil
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -12,7 +17,10 @@ import java.awt.FlowLayout
 import java.awt.Font
 import javax.swing.*
 
-class TranslationsContent(private var translations: List<ResourceFile>) {
+class TranslationsContent(
+    private val event: AnActionEvent,
+    private var translations: List<ResourceFile>
+) {
 
     val contentPanel: JPanel = JPanel()
 
@@ -79,6 +87,7 @@ class TranslationsContent(private var translations: List<ResourceFile>) {
         val leftButtonPanel = JPanel(FlowLayout(FlowLayout.LEFT))
         val escapeDataButton = JButton(escapeDataButtonLabel)
         escapeDataButton.preferredSize = Dimension(220, 40)
+
         escapeDataButton.addActionListener { _ ->
             translations = if (hasEscapedData) {
                 TranslationUtil.removeTranslationsEscape(translations)
@@ -97,13 +106,24 @@ class TranslationsContent(private var translations: List<ResourceFile>) {
         val rightButtonPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
         val confirmTranslationButton = JButton("Apply Translations")
         confirmTranslationButton.preferredSize = Dimension(220, 40)
-        confirmTranslationButton.addActionListener { _ -> }
+
+        confirmTranslationButton.addActionListener { _ ->
+            executeWriteTranslationActions()
+        }
+
         rightButtonPanel.add(confirmTranslationButton)
 
         controlsPanel.add(leftButtonPanel, BorderLayout.WEST)
         controlsPanel.add(rightButtonPanel, BorderLayout.EAST)
 
         return controlsPanel
+    }
+
+    private fun executeWriteTranslationActions() {
+        ApplicationManager.getApplication().invokeLater {
+            MyState().getInstance().state.translations = translations
+            ActionUtil.invokeAction(WriteTranslationsAction(), event.dataContext, event.place, null, null)
+        }
     }
 
     private fun buildTranslationsContent(translations: List<ResourceFile>): JPanel {

@@ -3,7 +3,6 @@ package you.thiago.phrasedroid
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -14,11 +13,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import you.thiago.phrasedroid.data.ApiSettings
+import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.network.Api
 import you.thiago.phrasedroid.state.MyState
 import you.thiago.phrasedroid.ui.LoadingContent
+import you.thiago.phrasedroid.ui.TranslationsContent
 import you.thiago.phrasedroid.util.FileLoader
+import you.thiago.phrasedroid.util.FileMapper
 import you.thiago.phrasedroid.util.JsonUtil
 import java.nio.file.Paths
 
@@ -104,7 +106,7 @@ class MyDemoAction: AnAction() {
 
                     if (list?.isNotEmpty() == true) {
                         ApplicationManager.getApplication().invokeLater {
-                            writeTranslations(e, list)
+                            setupTranslationsWindow(e, list)
                         }
                     }
                 }
@@ -112,9 +114,10 @@ class MyDemoAction: AnAction() {
         }
     }
 
-    private fun writeTranslations(e: AnActionEvent, list: List<Translation>) {
-        MyState().getInstance().state.translations = list
-        ActionUtil.invokeAction(WriteTranslationsAction(), e.dataContext, e.place, null, null)
+    private fun setupTranslationsWindow(e: AnActionEvent, translations: List<Translation>) {
+        FileMapper.getResourceFilesList(translations).also { list ->
+            displayTranslations(e, list)
+        }
     }
 
     private fun displayLoadingWindow(project: Project) {
@@ -126,6 +129,23 @@ class MyDemoAction: AnAction() {
         val content = ContentFactory
             .getInstance()
             .createContent(loadingContent.contentPanel, "Loading", false)
+
+        toolWindow.contentManager.removeAllContents(false)
+        toolWindow.contentManager.addContent(content)
+        toolWindow.show()
+    }
+
+    private fun displayTranslations(e: AnActionEvent, resourceFiles: List<ResourceFile>) {
+        val project = e.project ?: return
+
+        val toolWindowManager = ToolWindowManager.getInstance(project)
+        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid") ?: return
+
+        val loadingContent = TranslationsContent(e, resourceFiles)
+
+        val content = ContentFactory
+            .getInstance()
+            .createContent(loadingContent.contentPanel, "Confirmation", false)
 
         toolWindow.contentManager.removeAllContents(false)
         toolWindow.contentManager.addContent(content)
