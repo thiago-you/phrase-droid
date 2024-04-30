@@ -1,8 +1,10 @@
 package you.thiago.phrasedroid.toolbar
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
@@ -29,10 +31,31 @@ class TranslationsContent(
 
     init {
         contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
-        contentPanel.border = BorderFactory.createEmptyBorder(20, 0, 0, 0)
+        contentPanel.border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+        contentPanel.add(buildHeaderPanel())
         contentPanel.add(controlsPanel)
         contentPanel.add(buildCheckboxPanel())
         contentPanel.add(scrollablePanel)
+    }
+
+    private fun buildHeaderPanel(): JPanel {
+        val headerPanel = JPanel(BorderLayout())
+        headerPanel.border = BorderFactory.createEmptyBorder(5, 0, 20, 20)
+
+        val closeButton = JButton()
+        closeButton.icon = AllIcons.Actions.Cancel
+        closeButton.toolTipText = "Finish"
+        closeButton.border = null
+        closeButton.isContentAreaFilled = false
+        closeButton.preferredSize = Dimension(24, 24)
+
+        closeButton.addActionListener {
+            closeToolwindow()
+        }
+
+        headerPanel.add(closeButton, BorderLayout.EAST)
+
+        return headerPanel
     }
 
     private fun buildControlsPanel(): JPanel {
@@ -70,6 +93,16 @@ class TranslationsContent(
             scrollablePanel.viewport.revalidate()
             scrollablePanel.viewport.repaint()
         }
+    }
+
+    private fun closeToolwindow() {
+        val project = event.project ?: return
+
+        val toolWindowManager = ToolWindowManager.getInstance(project)
+        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid")
+
+        toolWindow?.contentManager?.removeAllContents(false)
+        toolWindow?.hide(null)
     }
 
     private fun buildControlsPanelContent(): JPanel {
