@@ -23,7 +23,7 @@ class LoadingContent : ToolwindowContent() {
     }
 
     private fun buildLoadingContent(): JPanel {
-        val loadingLabel = JBLabel("Loading translations...")
+        val loadingLabel = JBLabel("Loading...")
         val loadingPanel = JPanel()
         loadingPanel.add(loadingLabel)
 

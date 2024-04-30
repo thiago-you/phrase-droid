@@ -30,7 +30,7 @@ class TranslationsContent(
 
     init {
         contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
-        contentPanel.border = BorderFactory.createEmptyBorder(40, 0, 0, 0)
+        contentPanel.border = BorderFactory.createEmptyBorder(20, 0, 0, 0)
         contentPanel.add(controlsPanel)
         contentPanel.add(buildCheckboxPanel())
         contentPanel.add(scrollablePanel)
@@ -46,7 +46,7 @@ class TranslationsContent(
     private fun buildScrollablePanel(translations: List<ResourceFile>): JBScrollPane {
         val scrollablePanel = JBScrollPane()
         scrollablePanel.viewport.add(buildTranslationsContent(translations))
-        scrollablePanel.border = BorderFactory.createEmptyBorder(30, 20, 80, 20)
+        scrollablePanel.border = BorderFactory.createEmptyBorder(15, 20, 40, 20)
 
         return scrollablePanel
     }
@@ -79,9 +79,9 @@ class TranslationsContent(
         controlsPanel.border = BorderFactory.createEmptyBorder(0, 20, 0, 20)
 
         val escapeDataButtonLabel = if (!hasEscapedData) {
-            "Add Escape [CDATA]"
+            "Add Markup [CDATA]"
         } else {
-            "Remove Escape [CDATA]"
+            "Remove Markup [CDATA]"
         }
 
         val leftButtonPanel = JPanel(FlowLayout(FlowLayout.LEFT))

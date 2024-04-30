@@ -6,11 +6,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDocument
 import you.thiago.phrasedroid.data.ResourceFile
-import you.thiago.phrasedroid.state.AppState
 import you.thiago.phrasedroid.state.FlashState
 
 class WriteTranslationsAction: AnAction() {
@@ -25,6 +25,8 @@ class WriteTranslationsAction: AnAction() {
         WriteCommandAction.runWriteCommandAction(project) {
             writeResources(project, FlashState.translations)
         }
+
+        showSuccessMessage(project)
     }
 
     private fun writeResources(project: Project, resourceFiles: List<ResourceFile>) {
@@ -60,5 +62,14 @@ class WriteTranslationsAction: AnAction() {
         val regex = "<string name=\"${resource.name}\">[\\s\\S]*?</string>".toRegex()
         val updatedContent = regex.replace(content) { resource.content }
         document.setText(updatedContent)
+    }
+
+    private fun showSuccessMessage(project: Project) {
+        Messages.showMessageDialog(
+            project,
+            "Translations added successfully!",
+            "Done!",
+            Messages.getInformationIcon()
+        )
     }
 }
