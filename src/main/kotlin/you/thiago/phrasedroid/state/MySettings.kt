@@ -17,6 +17,7 @@ class MySettings : SimplePersistentStateComponent<MyState>(MyState())
 class MyState : BaseState() {
     var settingsFilePath: String = ""
     var translations: List<ResourceFile> = emptyList()
+    var isUpdateSelected: Boolean = false
     var isLoading: Boolean = false
 
     fun getInstance(): MySettings {

@@ -45,7 +45,17 @@ class WriteTranslationsAction: AnAction() {
         file.findDocument()?.also { document ->
             if (!document.text.contains(resource.name)) {
                 val lastLineStartOffset = document.getLineStartOffset(document.lineCount - 1)
-                document.insertString(lastLineStartOffset, resource.content)
+                document.insertString(lastLineStartOffset, "\t${resource.content}\n")
+            } else {
+                if (MyState().getInstance().state.isUpdateSelected) {
+                    val content = document.text
+
+                    val regex = "<string name=\"${resource.name}\">[\\s\\S]*?</string>".toRegex()
+
+                    val updatedContent = regex.replace(content) { resource.content }
+
+                    document.setText(updatedContent)
+                }
             }
         }
     }

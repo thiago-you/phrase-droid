@@ -28,11 +28,13 @@ class TranslationsContent(
     private val controlsPanel: JPanel = buildControlsPanel()
 
     private var hasEscapedData = false
+    private var isUpdateSelected = false
 
     init {
         contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
         contentPanel.border = BorderFactory.createEmptyBorder(40, 0, 0, 0)
         contentPanel.add(controlsPanel)
+        contentPanel.add(buildCheckboxPanel())
         contentPanel.add(scrollablePanel)
     }
 
@@ -119,9 +121,26 @@ class TranslationsContent(
         return controlsPanel
     }
 
+    private fun buildCheckboxPanel(): JPanel {
+        val checkBox = JCheckBox("Allow resource update?")
+
+        checkBox.addActionListener { _ ->
+            isUpdateSelected = checkBox.isSelected
+        }
+
+        val checkBoxPanel = JPanel()
+        checkBoxPanel.layout = BorderLayout()
+        checkBoxPanel.border = BorderFactory.createEmptyBorder(10, 20, 0, 20)
+        checkBoxPanel.add(checkBox, BorderLayout.WEST)
+
+        return checkBoxPanel
+    }
+
     private fun executeWriteTranslationActions() {
         ApplicationManager.getApplication().invokeLater {
             MyState().getInstance().state.translations = translations
+            MyState().getInstance().state.isUpdateSelected = isUpdateSelected
+
             ActionUtil.invokeAction(WriteTranslationsAction(), event.dataContext, event.place, null, null)
         }
     }

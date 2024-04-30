@@ -26,8 +26,6 @@ import java.nio.file.Paths
 
 class MyDemoAction: AnAction() {
 
-
-
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.EDT
     }
@@ -39,6 +37,23 @@ class MyDemoAction: AnAction() {
 
         if (apiSettings != null) {
             MyState().getInstance().state.isLoading = true
+
+//            val input = Messages.showInputDialog(
+//                project,
+//                "Enter your input:",
+//                "Input Dialog",
+//                Messages.getQuestionIcon()
+//            )
+//
+//            if (input.isNullOrBlank()) {
+//                Messages.showMessageDialog(
+//                    project,
+//                    "Input cannot be empty",
+//                    "Error",
+//                    Messages.getErrorIcon()
+//                )
+//                return
+//            }
 
             val confirmed = Messages.showYesNoDialog(
                 project,
