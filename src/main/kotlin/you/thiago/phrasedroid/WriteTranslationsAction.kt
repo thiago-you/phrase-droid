@@ -10,12 +10,12 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDocument
 import you.thiago.phrasedroid.data.ResourceFile
-import you.thiago.phrasedroid.state.MyState
+import you.thiago.phrasedroid.state.AppState
 
 class WriteTranslationsAction: AnAction() {
 
-    private val translations by lazy { MyState().getInstance().state.translations }
-    private val isUpdateSelected by lazy { MyState().getInstance().state.isUpdateSelected }
+    private val translations by lazy { AppState().getInstance().state.translations }
+    private val isUpdateSelected by lazy { AppState().getInstance().state.isUpdateSelected }
 
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.EDT

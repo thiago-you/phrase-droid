@@ -16,8 +16,9 @@ import kotlinx.coroutines.launch
 import you.thiago.phrasedroid.data.ApiSettings
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.data.Translation
+import you.thiago.phrasedroid.enums.SettingsEnum
 import you.thiago.phrasedroid.network.Api
-import you.thiago.phrasedroid.state.MyState
+import you.thiago.phrasedroid.state.AppState
 import you.thiago.phrasedroid.toolbar.LoadingContent
 import you.thiago.phrasedroid.toolbar.ToolwindowContent
 import you.thiago.phrasedroid.toolbar.TranslationsContent
@@ -28,11 +29,7 @@ import java.nio.file.Paths
 
 class GetTranslationAction: AnAction() {
 
-    private val settingsFilePath by lazy { MyState().getInstance().state.settingsFilePath }
-
-    companion object {
-        private const val SETTINGS_RELATIVE_PATH = "phrase-droid-settings.json"
-    }
+    private val settingsFilePath by lazy { AppState().getInstance().state.settingsFilePath }
 
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.EDT
@@ -59,7 +56,7 @@ class GetTranslationAction: AnAction() {
             Messages.getInformationIcon()
         )
 
-        MyState().getInstance().state.translationKey = input ?: ""
+        AppState().getInstance().state.translationKey = input ?: ""
 
         return input
     }
@@ -81,7 +78,7 @@ class GetTranslationAction: AnAction() {
     private fun getVirtualFileByProjectRelativePath(project: Project): ApiSettings? {
         val basePath = project.basePath ?: return null
 
-        val absolutePath = Paths.get(basePath, SETTINGS_RELATIVE_PATH).toString()
+        val absolutePath = Paths.get(basePath, SettingsEnum.RELATIVE_PATH.value).toString()
 
         val file = FileLoader.getVirtualFileByPath(absolutePath)
 

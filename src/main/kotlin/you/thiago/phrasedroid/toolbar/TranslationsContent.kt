@@ -9,7 +9,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.UIUtil
 import you.thiago.phrasedroid.WriteTranslationsAction
 import you.thiago.phrasedroid.data.ResourceFile
-import you.thiago.phrasedroid.state.MyState
+import you.thiago.phrasedroid.state.AppState
 import you.thiago.phrasedroid.util.TranslationUtil
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -136,8 +136,8 @@ class TranslationsContent(
 
     private fun executeWriteTranslationActions() {
         ApplicationManager.getApplication().invokeLater {
-            MyState().getInstance().state.translations = translations
-            MyState().getInstance().state.isUpdateSelected = isUpdateSelected
+            AppState().getInstance().state.translations = translations
+            AppState().getInstance().state.isUpdateSelected = isUpdateSelected
 
             ActionUtil.invokeAction(WriteTranslationsAction(), event.dataContext, event.place, null, null)
         }
