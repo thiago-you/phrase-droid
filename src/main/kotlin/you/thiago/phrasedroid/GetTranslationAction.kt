@@ -19,6 +19,7 @@ import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.enums.SettingsEnum
 import you.thiago.phrasedroid.network.Api
 import you.thiago.phrasedroid.state.AppState
+import you.thiago.phrasedroid.state.FlashState
 import you.thiago.phrasedroid.toolbar.LoadingContent
 import you.thiago.phrasedroid.toolbar.ToolwindowContent
 import you.thiago.phrasedroid.toolbar.TranslationsContent
@@ -56,7 +57,7 @@ class GetTranslationAction: AnAction() {
             Messages.getInformationIcon()
         )
 
-        AppState().getInstance().state.translationKey = input ?: ""
+        FlashState.translationKey = input ?: ""
 
         return input
     }

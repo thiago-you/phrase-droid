@@ -6,7 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import you.thiago.phrasedroid.data.ApiSettings
 import you.thiago.phrasedroid.data.Translation
-import you.thiago.phrasedroid.state.AppState
+import you.thiago.phrasedroid.state.FlashState
 import you.thiago.phrasedroid.util.JsonUtil
 
 object Api {
@@ -14,8 +14,6 @@ object Api {
     private const val API_HOST = "https://api.phrase.com"
     private const val ENDPOINT_KEY_INFO = "/v2/projects/%s/keys?q=name:%s"
     private const val ENDPOINT_TRANSLATIONS = "/v2/projects/%s/keys/%s/translations"
-
-    private val translationKey by lazy { AppState().getInstance().state.translationKey }
 
     suspend fun fetchTranslations(apiSettings: ApiSettings): List<Translation> {
         val response = getTranslationKeyId(apiSettings)
@@ -37,7 +35,7 @@ object Api {
     }
 
     private suspend fun getTranslationKeyId(apiSettings: ApiSettings): String? {
-        val endpoint = buildEndpoint(apiSettings, ENDPOINT_KEY_INFO, translationKey)
+        val endpoint = buildEndpoint(apiSettings, ENDPOINT_KEY_INFO, FlashState.translationKey)
         return executeRequest(apiSettings, endpoint)
     }
 

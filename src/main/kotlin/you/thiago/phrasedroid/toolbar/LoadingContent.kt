@@ -38,11 +38,10 @@ class LoadingContent : ToolwindowContent() {
         val progressPanel = JPanel()
         progressPanel.add(progressBar)
 
-        simulateProgress(progressBar)
-
         return progressPanel
     }
 
+    @Suppress("unused")
     private fun buildMessageContent(): JPanel {
         val contentPanel = JPanel()
         contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
@@ -60,14 +59,5 @@ class LoadingContent : ToolwindowContent() {
         contentPanel.add(authorPanel, BorderLayout.SOUTH)
 
         return contentPanel
-    }
-
-    private fun simulateProgress(progressBar: JProgressBar) {
-        Thread {
-            for (i in 0..100) {
-                Thread.sleep(50)
-                progressBar.value = i
-            }
-        }.start()
     }
 }

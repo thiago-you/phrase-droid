@@ -11,11 +11,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDocument
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.state.AppState
+import you.thiago.phrasedroid.state.FlashState
 
 class WriteTranslationsAction: AnAction() {
-
-    private val translations by lazy { AppState().getInstance().state.translations }
-    private val isUpdateSelected by lazy { AppState().getInstance().state.isUpdateSelected }
 
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.EDT
@@ -25,7 +23,7 @@ class WriteTranslationsAction: AnAction() {
         val project = e.project ?: return
 
         WriteCommandAction.runWriteCommandAction(project) {
-            writeResources(project, translations)
+            writeResources(project, FlashState.translations)
         }
     }
 
@@ -47,7 +45,7 @@ class WriteTranslationsAction: AnAction() {
 
             if (!content.contains(resource.name)) {
                 addResourceIntoFile(document, resource)
-            } else if (isUpdateSelected) {
+            } else if (FlashState.isUpdateSelected) {
                 updateResourceIntoFile(document, resource, content)
             }
         }
