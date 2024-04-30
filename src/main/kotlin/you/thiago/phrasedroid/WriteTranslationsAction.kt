@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -13,6 +14,9 @@ import you.thiago.phrasedroid.state.MyState
 
 class WriteTranslationsAction: AnAction() {
 
+    private val translations by lazy { MyState().getInstance().state.translations }
+    private val isUpdateSelected by lazy { MyState().getInstance().state.isUpdateSelected }
+
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.EDT
     }
@@ -20,8 +24,16 @@ class WriteTranslationsAction: AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        MyState().getInstance().state.translations.also { list ->
-            writeResources(project, list)
+        WriteCommandAction.runWriteCommandAction(project) {
+            writeResources(project, translations)
+        }
+    }
+
+    private fun writeResources(project: Project, resourceFiles: List<ResourceFile>) {
+        resourceFiles.forEach { resource ->
+            loadFile(project, resource.filePath)
+                ?.takeIf { it.isValid }
+                ?.let { writeResourceFiles(it, resource) }
         }
     }
 
@@ -29,34 +41,26 @@ class WriteTranslationsAction: AnAction() {
         return VfsUtil.findFileByIoFile(java.io.File(project.basePath + filePath), true)
     }
 
-    private fun writeResources(project: Project, resourceFiles: List<ResourceFile>) {
-        WriteCommandAction.runWriteCommandAction(project) {
-            resourceFiles.forEach { resource ->
-                val file = loadFile(project, resource.filePath)
+    private fun writeResourceFiles(file: VirtualFile, resource: ResourceFile) {
+        file.findDocument()?.also { document ->
+            val content = document.text
 
-                if (file != null && file.isValid) {
-                    writeResourceFiles(file, resource)
-                }
+            if (!content.contains(resource.name)) {
+                addResourceIntoFile(document, resource)
+            } else if (isUpdateSelected) {
+                updateResourceIntoFile(document, resource, content)
             }
         }
     }
 
-    private fun writeResourceFiles(file: VirtualFile, resource: ResourceFile) {
-        file.findDocument()?.also { document ->
-            if (!document.text.contains(resource.name)) {
-                val lastLineStartOffset = document.getLineStartOffset(document.lineCount - 1)
-                document.insertString(lastLineStartOffset, "\t${resource.content}\n")
-            } else {
-                if (MyState().getInstance().state.isUpdateSelected) {
-                    val content = document.text
+    private fun addResourceIntoFile(document: Document, resource: ResourceFile) {
+        val lastLineStartOffset = document.getLineStartOffset(document.lineCount - 1)
+        document.insertString(lastLineStartOffset, "\t${resource.content}\n")
+    }
 
-                    val regex = "<string name=\"${resource.name}\">[\\s\\S]*?</string>".toRegex()
-
-                    val updatedContent = regex.replace(content) { resource.content }
-
-                    document.setText(updatedContent)
-                }
-            }
-        }
+    private fun updateResourceIntoFile(document: Document, resource: ResourceFile, content: String) {
+        val regex = "<string name=\"${resource.name}\">[\\s\\S]*?</string>".toRegex()
+        val updatedContent = regex.replace(content) { resource.content }
+        document.setText(updatedContent)
     }
 }
