@@ -54,7 +54,7 @@
             <action
                 id="you.thiago.phrasedroid.GetTranslationAction"
                 class="you.thiago.phrasedroid.GetTranslationAction"
-                text="PhraseDroid: Get key"
+                text="PhraseDroid: Get Key"
                 description="Get translations from API using KEY"
                 icon="AllIcons.Nodes.PropertyRead">
                 <keyboard-shortcut keymap="$default" first-keystroke="control shift P"/>
