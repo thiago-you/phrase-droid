@@ -75,6 +75,6 @@ object FileMapper {
     }
 
     private fun getTranslationContent(name: String, content: String): String {
-        return "\t<string name=\"%s\">%s</string>\n".format(name, content)
+        return "<string name=\"%s\">%s</string>".format(name, content)
     }
 }

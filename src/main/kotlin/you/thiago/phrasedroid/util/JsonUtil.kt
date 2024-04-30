@@ -8,7 +8,6 @@ import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.data.TranslationKey
 import java.nio.charset.StandardCharsets
 
-
 object JsonUtil {
     private val objectMapper: ObjectMapper = JsonMapper.objectMapper
 

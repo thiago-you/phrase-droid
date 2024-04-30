@@ -1,4 +1,4 @@
-package you.thiago.phrasedroid.ui
+package you.thiago.phrasedroid.toolbar
 
 import com.intellij.ui.components.JBLabel
 import java.awt.BorderLayout
@@ -8,9 +8,7 @@ import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JProgressBar
 
-class LoadingContent {
-
-    val contentPanel: JPanel = JPanel()
+class LoadingContent : ToolwindowContent() {
 
     init {
         contentPanel.border = BorderFactory.createEmptyBorder(40, 0, 0, 0)

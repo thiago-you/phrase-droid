@@ -14,7 +14,14 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    PhraseApp integration to use into <strong>Android Studio</strong>.
+    PhraseApp API integration to use into <strong>Android Studio</strong>.
+    <ul>
+        <li>Fetch Key info from API</li>
+        <li>List translations using KEY</li>
+        <li>Escape translation Key when has HTML data with markup</li>
+        <li>Auto escape invalid ' (quote) char on resource strings</li>
+        <li>Add or replace Keys on string XML resources</li>
+    </ul>
   ]]></description>
 
     <!-- Product and plugin compatibility requirements.
@@ -37,18 +44,18 @@
                     secondary="true"
                     icon="AllIcons.Toolwindows.WebToolWindow"
                     anchor="right"
-                    factoryClass="you.thiago.phrasedroid.ui.SidebarWindow"/>
+                    factoryClass="you.thiago.phrasedroid.toolbar.SidebarWindow"/>
     </extensions>
 
     <actions>
         <group
-            id="MyDemoActionGroup"
-            description="Demo action group">
+            id="ApiActionsGroup"
+            description="Api usage actions">
             <action
-                id="com.example.demoplugin.MyDemoAction"
-                class="you.thiago.phrasedroid.MyDemoAction"
-                text="Demo Action"
-                description="Demo action example"/>
+                id="you.thiago.phrasedroid.GetTranslationAction"
+                class="you.thiago.phrasedroid.GetTranslationAction"
+                text="Get Phrase Key"
+                description="Get translations from API using KEY"/>
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </group>
     </actions>

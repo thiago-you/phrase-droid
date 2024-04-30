@@ -1,4 +1,4 @@
-package you.thiago.phrasedroid.ui
+package you.thiago.phrasedroid.toolbar
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
@@ -20,9 +20,7 @@ import javax.swing.*
 class TranslationsContent(
     private val event: AnActionEvent,
     private var translations: List<ResourceFile>
-) {
-
-    val contentPanel: JPanel = JPanel()
+) : ToolwindowContent() {
 
     private val scrollablePanel: JBScrollPane = buildScrollablePanel(translations)
     private val controlsPanel: JPanel = buildControlsPanel()

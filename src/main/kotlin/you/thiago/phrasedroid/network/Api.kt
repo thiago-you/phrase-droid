@@ -5,21 +5,44 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import you.thiago.phrasedroid.data.ApiSettings
+import you.thiago.phrasedroid.data.Translation
+import you.thiago.phrasedroid.state.MyState
+import you.thiago.phrasedroid.util.JsonUtil
 
-class Api {
+object Api {
 
-    private val phraseApiUrl = "https://api.phrase.com"
+    private const val API_HOST = "https://api.phrase.com"
+    private const val ENDPOINT_KEY_INFO = "/v2/projects/%s/keys?q=name:%s"
+    private const val ENDPOINT_TRANSLATIONS = "/v2/projects/%s/keys/%s/translations"
 
-    private val keyInfoEndpoint = "/v2/projects/%s/keys?q=name:%s"
-    private val translationsEndpoint = "/v2/projects/%s/keys/%s/translations"
+    private val translationKey by lazy { MyState().getInstance().state.translationKey }
 
-    suspend fun getTranslationKeyId(apiSettings: ApiSettings): String? {
-        val endpoint = buildEndpoint(apiSettings, keyInfoEndpoint, "ON_REQUEST_WAIT_CONFIRMATION")
+    suspend fun fetchTranslations(apiSettings: ApiSettings): List<Translation> {
+        val response = getTranslationKeyId(apiSettings)
+
+        if (!response.isNullOrBlank()) {
+            val translationKey = JsonUtil.readTranslationKeyInfo(response)
+            val data = getTranslations(apiSettings, translationKey?.id ?: String())
+
+            if (!data.isNullOrBlank()) {
+                val list = JsonUtil.readTranslations(data)
+
+                if (list?.isNotEmpty() == true) {
+                    return list
+                }
+            }
+        }
+
+        return emptyList()
+    }
+
+    private suspend fun getTranslationKeyId(apiSettings: ApiSettings): String? {
+        val endpoint = buildEndpoint(apiSettings, ENDPOINT_KEY_INFO, translationKey)
         return executeRequest(apiSettings, endpoint)
     }
 
-    suspend fun getTranslations(apiSettings: ApiSettings, translationId: String): String? {
-        val endpoint = buildEndpoint(apiSettings, translationsEndpoint, translationId)
+    private suspend fun getTranslations(apiSettings: ApiSettings, translationId: String): String? {
+        val endpoint = buildEndpoint(apiSettings, ENDPOINT_TRANSLATIONS, translationId)
         return executeRequest(apiSettings, endpoint)
     }
 
@@ -28,8 +51,13 @@ class Api {
             val response: HttpResponse = HttpClientFactory.client.request(endpoint) {
                 headers {
                     append(HttpHeaders.Authorization, "Basic ${apiSettings.key}")
-                    append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentEmail})")
-                    append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentUrl})")
+
+                    if (apiSettings.agentEmail.isNotBlank()) {
+                        append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentEmail})")
+                    }
+                    if (apiSettings.agentUrl.isNotBlank()) {
+                        append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentUrl})")
+                    }
                 }
             }
 
@@ -41,6 +69,6 @@ class Api {
     }
 
     private fun buildEndpoint(apiSettings: ApiSettings, endpoint: String, extra: String): String {
-        return phraseApiUrl + endpoint.format(apiSettings.id, extra)
+        return API_HOST + endpoint.format(apiSettings.id, extra)
     }
 }
