@@ -56,7 +56,11 @@
                 class="you.thiago.phrasedroid.GetTranslationAction"
                 text="PhraseDroid: Get key"
                 description="Get translations from API using KEY"
-                icon="AllIcons.Nodes.PropertyRead" />
+                icon="AllIcons.Nodes.PropertyRead">
+                <keyboard-shortcut keymap="$default" first-keystroke="control shift P"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift P"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control shift P"/>
+            </action>
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </group>
     </actions>
