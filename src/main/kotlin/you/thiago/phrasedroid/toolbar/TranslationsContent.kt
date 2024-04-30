@@ -6,7 +6,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.util.ui.UIUtil
 import you.thiago.phrasedroid.WriteTranslationsAction
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.state.FlashState
@@ -90,9 +89,9 @@ class TranslationsContent(
 
         escapeDataButton.addActionListener { _ ->
             translations = if (hasEscapedData) {
-                TranslationUtil.removeTranslationsEscape(translations)
+                TranslationUtil.removeEscapeFromData(translations)
             } else {
-                TranslationUtil.escapeTranslations(translations)
+                TranslationUtil.escapeData(translations)
             }
 
             hasEscapedData = !hasEscapedData
@@ -155,12 +154,9 @@ class TranslationsContent(
             fileNamePanel.add(fileNameLabel, BorderLayout.PAGE_START)
             fileNamePanel.border = BorderFactory.createEmptyBorder(0, 0, 5, 0)
 
-            val translationLabel = JBLabel(resource.translation)
-            translationLabel.fontColor = UIUtil.FontColor.NORMAL
-
             val translationPanel = JPanel(BorderLayout())
             translationPanel.background = JBColor.WHITE
-            translationPanel.add(translationLabel, BorderLayout.PAGE_START)
+            translationPanel.add(createCodeBlockLabel(resource.translation), BorderLayout.PAGE_START)
 
             val contentPanel = JPanel()
             contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
@@ -173,4 +169,24 @@ class TranslationsContent(
 
         return panel
     }
+
+    private fun createCodeBlockLabel(text: String): JBScrollPane {
+        val paddedText = getCodeBlockHtmlTemplate(text.trim())
+        val editorPane = JEditorPane("text/html", paddedText)
+
+        editorPane.isEditable = false
+        editorPane.border = null
+
+        val scrollPane = JBScrollPane(editorPane)
+
+        scrollPane.verticalScrollBarPolicy = JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+        scrollPane.horizontalScrollBarPolicy = JBScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+
+        return scrollPane
+    }
+
+    private fun getCodeBlockHtmlTemplate(text: String): String = text.trim()
+        .replace("<![CDATA[", """&lt;![CDATA[""")
+        .replace("]]>", """]]&gt;""")
+        .let { """<pre style="padding: 3px 4px;">${it}</pre>""" }
 }

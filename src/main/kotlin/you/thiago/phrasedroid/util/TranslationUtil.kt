@@ -4,16 +4,16 @@ import you.thiago.phrasedroid.data.ResourceFile
 
 object TranslationUtil {
 
-    fun escapeTranslations(translations: List<ResourceFile>): List<ResourceFile> {
+    fun escapeData(translations: List<ResourceFile>): List<ResourceFile> {
         return translations.map { item ->
             return@map item.apply {
-                translation = escapeHtml(translation)
+                translation = addMarkupToContent(translation)
                 content = getTranslationContent(name, translation)
             }
         }
     }
 
-    fun removeTranslationsEscape(translations: List<ResourceFile>): List<ResourceFile> {
+    fun removeEscapeFromData(translations: List<ResourceFile>): List<ResourceFile> {
         return translations.map { item ->
             return@map item.apply {
                 translation = sourceTranslation
@@ -26,7 +26,7 @@ object TranslationUtil {
         return content.replace("'", """\'""")
     }
 
-    private fun escapeHtml(content: String): String {
+    private fun addMarkupToContent(content: String): String {
         val escapedContent = content.replace("\n", " ")
             .replace("""\\\\'""", "'")
             .replace("""\\\'""", "'")
