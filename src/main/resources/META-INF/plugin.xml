@@ -14,7 +14,11 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    PhraseApp API integration to use into <strong>Android Studio</strong>.
+    <p>
+        PhraseApp API integration to use into <strong>Android Studio</strong>.
+        Useful for multi-language projects with PhraseApp integration.
+    </p>
+
     <ul>
         <li>Fetch Key info from API</li>
         <li>List translations using KEY</li>
@@ -22,6 +26,25 @@
         <li>Auto escape invalid ' (quote) char on resource strings</li>
         <li>Add or replace Keys on string XML resources</li>
     </ul>
+
+    <h2>How to use</h2>
+    <p>- Configure the API Key and Project ID on the settings page.</p>
+    <p>- Use the shortcut <strong>Ctrl + Shift + P</strong> to run the action.</p>
+    <p>- Set the translation key on dialog input to fetch the translations from the API.</p>
+    <p>- View the translations list before change resource files</p>
+    <p>- Add or remove markup from content when required (when having html templates)</p>
+    <p>- Insert/update then into resource files</p>
+    <p>- For more information, visit the <a href="https://github.com/thiago-you/phrase-droid">Github</a> page.</p>
+
+    <h2>API configuration file example:</h2>
+    <pre>
+{
+  "id": "required: API project ID",
+  "key": "required: API project auth key",
+  "agent_email": "optional: organization e-mail",
+  "agent_url": "optional: organization contact page"
+}
+    </pre>
   ]]></description>
 
     <!-- Product and plugin compatibility requirements.
