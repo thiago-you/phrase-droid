@@ -1,6 +1,5 @@
 package you.thiago.phrasedroid.data
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Translation(
