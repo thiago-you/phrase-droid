@@ -17,6 +17,7 @@ class LoadingContent : ToolwindowContent() {
         loading.layout = BoxLayout(loading, BoxLayout.Y_AXIS)
         loading.add(buildLoadingContent())
         loading.add(buildProgressContent())
+        // loading.add(buildMessageContent())
 
         contentPanel.add(loading, BorderLayout.CENTER)
     }
@@ -40,6 +41,25 @@ class LoadingContent : ToolwindowContent() {
         simulateProgress(progressBar)
 
         return progressPanel
+    }
+
+    private fun buildMessageContent(): JPanel {
+        val contentPanel = JPanel()
+        contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
+
+        val messageLabel = JBLabel("\"Do or do not. There is no try.\"")
+        val messagePanel = JPanel()
+        messagePanel.add(messageLabel)
+
+        @Suppress("DialogTitleCapitalization")
+        val authorLabel = JBLabel("- Yoda")
+        val authorPanel = JPanel()
+        authorPanel.add(authorLabel)
+
+        contentPanel.add(messagePanel, BorderLayout.NORTH)
+        contentPanel.add(authorPanel, BorderLayout.SOUTH)
+
+        return contentPanel
     }
 
     private fun simulateProgress(progressBar: JProgressBar) {

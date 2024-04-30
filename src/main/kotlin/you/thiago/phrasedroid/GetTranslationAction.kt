@@ -45,25 +45,21 @@ class GetTranslationAction: AnAction() {
 
         val input = requireTranslationKey(project)
 
-        displayLoadingWindow(project)
-
-        MyState().getInstance().state.translationKey = input
-
-        fetchApiData(e, apiSettings)
+        if (!input.isNullOrBlank()) {
+            displayLoadingWindow(project)
+            fetchApiData(e, apiSettings)
+        }
     }
 
-    private fun requireTranslationKey(project: Project): String {
+    private fun requireTranslationKey(project: Project): String? {
         val input = Messages.showInputDialog(
             project,
-            "Setup translation key to get data on API:",
-            "Translation Key",
-            Messages.getQuestionIcon()
+            "Translation KEY:",
+            "PhraseDroid",
+            Messages.getInformationIcon()
         )
 
-        if (input.isNullOrBlank()) {
-            showErrorDialog(project, "Input cannot be empty")
-            return requireTranslationKey(project)
-        }
+        MyState().getInstance().state.translationKey = input ?: ""
 
         return input
     }

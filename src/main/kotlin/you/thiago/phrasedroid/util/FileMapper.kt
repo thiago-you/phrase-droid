@@ -43,10 +43,10 @@ object FileMapper {
             filename = filename,
             filePath = filePath,
             name = translationName,
-            content = translationContent,
             locale = translation.locale.code,
-            translation = translation.content,
-            sourceTranslation = translation.content
+            translation = content,
+            sourceTranslation = content,
+            content = translationContent
         )
     }
 

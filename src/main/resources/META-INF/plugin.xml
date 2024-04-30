@@ -42,7 +42,7 @@
 
         <toolWindow id="PhraseDroid"
                     secondary="true"
-                    icon="AllIcons.Toolwindows.WebToolWindow"
+                    icon="AllIcons.Nodes.PropertyRead"
                     anchor="right"
                     factoryClass="you.thiago.phrasedroid.toolbar.SidebarWindow"/>
     </extensions>
@@ -54,8 +54,9 @@
             <action
                 id="you.thiago.phrasedroid.GetTranslationAction"
                 class="you.thiago.phrasedroid.GetTranslationAction"
-                text="Get Phrase Key"
-                description="Get translations from API using KEY"/>
+                text="PhraseDroid: Get key"
+                description="Get translations from API using KEY"
+                icon="AllIcons.Nodes.PropertyRead" />
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </group>
     </actions>

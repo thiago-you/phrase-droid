@@ -23,16 +23,19 @@ object TranslationUtil {
     }
 
     fun escapeSingleQuote(content: String): String {
-        var escapedContent = content.replace("'", "\\\'")
-        escapedContent = escapedContent.replace("\\", "\\\\\\\\")
-        return escapedContent
+        return content.replace("'", """\'""")
     }
 
     private fun escapeHtml(content: String): String {
-        var escapedContent = content.replace("\n", " ")
-        escapedContent = escapedContent.replace("'", "\\\'")
-        escapedContent = escapedContent.replace("\\", "\\\\\\\\")
-        escapedContent = escapedContent.replace("&", "\\&amp;")
+        val escapedContent = content.replace("\n", " ")
+            .replace("""\\\\'""", "'")
+            .replace("""\\\'""", "'")
+            .replace("""\\'""", "'")
+            .replace("""\'""", "'")
+            .replace("""\""", """\\""")
+            .replace("'", """\'""")
+            .replace("&", "&amp;")
+
         return "<![CDATA[$escapedContent]]>"
     }
 
