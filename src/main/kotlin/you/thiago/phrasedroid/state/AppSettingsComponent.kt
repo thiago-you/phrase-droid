@@ -6,6 +6,7 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.FormBuilder
 import org.jetbrains.annotations.NotNull
 import you.thiago.phrasedroid.enums.SettingsEnum
+import javax.swing.BoxLayout
 import javax.swing.JPanel
 
 /**
@@ -17,9 +18,11 @@ class AppSettingsComponent {
 
     private val settingsFilePathField = TextFieldWithBrowseButton()
 
+    private val defaultFileRelativePath by lazy { "/%s".format(SettingsEnum.RELATIVE_PATH.value) }
+
     init {
-        settingsFilePathField.toolTipText = "/%s".format(SettingsEnum.RELATIVE_PATH.value)
-        settingsFilePathField.textField.text = "/%s".format(SettingsEnum.RELATIVE_PATH.value)
+        settingsFilePathField.toolTipText = defaultFileRelativePath
+        settingsFilePathField.textField.text = defaultFileRelativePath
 
         settingsFilePathField.addBrowseFolderListener(
             "Select File",
@@ -30,10 +33,16 @@ class AppSettingsComponent {
 
         val inputLabel = JBLabel("Set JSON settings file path: ")
 
-        panel = FormBuilder.createFormBuilder()
+        val form = FormBuilder.createFormBuilder()
             .addLabeledComponent(inputLabel, settingsFilePathField, 1, false)
             .addComponentFillVertically(JPanel(), 0)
             .panel
+
+        panel= JPanel()
+        panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
+
+        panel.add(form, 0)
+        panel.add(JBLabel("Note: Default relative path $defaultFileRelativePath"), 1)
     }
 
     @get:NotNull
