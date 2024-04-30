@@ -6,6 +6,7 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.FormBuilder
 import org.jetbrains.annotations.NotNull
 import you.thiago.phrasedroid.enums.SettingsEnum
+import you.thiago.phrasedroid.util.JsonTemplate
 import java.awt.Component
 import java.awt.Font
 import javax.swing.BorderFactory
@@ -77,7 +78,7 @@ class AppSettingsComponent {
     }
 
     private fun buildExamplePanel(): JEditorPane {
-        val editorPane = JEditorPane("text/html", getJsonExampleText())
+        val editorPane = JEditorPane("text/html", getJsonTemplate())
 
         editorPane.isEditable = false
         editorPane.border = null
@@ -104,10 +105,5 @@ class AppSettingsComponent {
         )
     }
 
-    private fun getJsonExampleText(): String = """<pre style="padding: 3px 4px;">{
-  "id": "required: API project ID",
-  "key": "required: API project auth key",
-  "agent_email": "optional: organization e-mail",
-  "agent_url": "optional: organization contact page"
-}</pre>""".trimMargin()
+    private fun getJsonTemplate(): String = "<pre style=\"padding: 3px 4px;\">${JsonTemplate.get()}</pre>"
 }
