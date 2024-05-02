@@ -27,3 +27,10 @@ PhraseApp API plugin to use into <strong>Android Studio</strong>.Useful for mult
   "agent_url": "optional: organization contact page"
 }
 ```
+
+<p align="center" width="100%">
+    <img src="https://github.com/thiago-you/phrase-droid/assets/23344256/04107dcb-9e72-4a72-97aa-57f2d58f1746" width="350"/>
+    <img src="https://github.com/thiago-you/phrase-droid/assets/23344256/7af01437-cea5-4729-833f-75d03b4ba73e" width="350"/>
+    <img src="https://github.com/thiago-you/phrase-droid/assets/23344256/87832a04-0d65-4e77-8282-5e63cefbed91" width="350"/>
+    <img src="https://github.com/thiago-you/phrase-droid/assets/23344256/7b3fe4c3-3c83-48f5-a676-c89aba72467a" width="350"/>
+</p>
