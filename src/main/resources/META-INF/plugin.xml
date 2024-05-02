@@ -15,8 +15,8 @@
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
     <p>
-        PhraseApp API integration to use into <strong>Android Studio</strong>.
-        Useful for multi-language projects with PhraseApp integration.
+        PhraseApp plugin to use into <strong>Android Studio</strong>.
+        Useful for multi-language projects with API integration.
     </p>
 
     <ul>
