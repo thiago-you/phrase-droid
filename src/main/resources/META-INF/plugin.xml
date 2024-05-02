@@ -30,6 +30,7 @@
     <h2>How to use</h2>
     <p>- Configure the API Key and Project ID on the settings page.</p>
     <p>- Use the shortcut <strong>Ctrl + Shift + P</strong> to run the action.</p>
+    <p>- Optionally, you can run plugin from the tools action menu</p>
     <p>- Set the translation key on dialog input to fetch the translations from the API.</p>
     <p>- View the translations list before change resource files</p>
     <p>- Add or remove markup from content when required (when having html templates)</p>

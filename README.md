@@ -1,6 +1,6 @@
 ![PhraseApp](https://img.shields.io/badge/PhraseApp-blue) ![Android](https://img.shields.io/badge/ANDROID-green)
 
-### PhraseDroid
+# PhraseDroid
 PhraseApp API plugin to use into <strong>Android Studio</strong>.Useful for multi-language projects with API integration.
 
 - Fetch Key info from API
@@ -9,16 +9,17 @@ PhraseApp API plugin to use into <strong>Android Studio</strong>.Useful for mult
 - Auto escape invalid ' (quote) char on resource strings
 - Add or replace Keys on string XML resources
 
-#### How to use
+### How to use
 - Configure the API Key and Project ID on the settings page.
 - Use the shortcut <strong>Ctrl + Shift + P</strong> to run the action.
+- Optionally, you can run plugin from the tools action menu
 - Set the translation key on dialog input to fetch the translations from the API.
 - View the translations list before change resource files
 - Add or remove markup from content when required (when having html templates)
 - Insert/update then into resource files
 
 
-#### API configuration file example:
+### API configuration file example:
 ```
 {
   "id": "required: API project ID",
@@ -28,6 +29,7 @@ PhraseApp API plugin to use into <strong>Android Studio</strong>.Useful for mult
 }
 ```
 
+### Interface:
 <p align="center" width="100%">
     <img src="https://github.com/thiago-you/phrase-droid/assets/23344256/04107dcb-9e72-4a72-97aa-57f2d58f1746" width="350"/>
     <img src="https://github.com/thiago-you/phrase-droid/assets/23344256/7af01437-cea5-4729-833f-75d03b4ba73e" width="350"/>
