@@ -33,7 +33,7 @@ class LoadingContent : ToolwindowContent() {
     private fun buildProgressContent(): JPanel {
         val progressBar = JProgressBar(0, 100)
         progressBar.isIndeterminate = true
-        progressBar.preferredSize = Dimension(300, 10)
+        progressBar.preferredSize = Dimension(300, 20)
 
         val progressPanel = JPanel()
         progressPanel.add(progressBar)
