@@ -42,7 +42,7 @@ class GetTranslationAction: AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val apiSettings = getJsonData(e) ?: return showErrorDialog(project, "Failed to load API configuration. Check if API JSON settings file is available.")
+        val apiSettings = getJsonData(e) ?: return showErrorDialog(project, "Failed to load API configuration. Check if JSON settings file is available.")
 
         val input = requireTranslationKey(project)
 
@@ -108,6 +108,7 @@ class GetTranslationAction: AnAction() {
                 displayTranslations(e, FileMapper.getResourceFilesList(translations))
             } else {
                 showErrorDialog(project, "Translations not found for this KEY.", "Not Found")
+                closeToolwindow(project)
             }
         }
     }
@@ -149,5 +150,13 @@ class GetTranslationAction: AnAction() {
                 NotificationType.ERROR
             )
         )
+    }
+
+    private fun closeToolwindow(project: Project) {
+        val toolWindowManager = ToolWindowManager.getInstance(project)
+        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid")
+
+        toolWindow?.contentManager?.removeAllContents(false)
+        toolWindow?.hide(null)
     }
 }
