@@ -1,5 +1,8 @@
 package you.thiago.phrasedroid
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -39,7 +42,7 @@ class GetTranslationAction: AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val apiSettings = getJsonData(e) ?: return showErrorDialog(project, "Failed to load API settings.")
+        val apiSettings = getJsonData(e) ?: return showErrorDialog(project, "Failed to load API configuration. Check if API JSON settings file is available.")
 
         val input = requireTranslationKey(project)
 
@@ -98,11 +101,13 @@ class GetTranslationAction: AnAction() {
     }
 
     private fun setupTranslationsWindow(e: AnActionEvent, translations: List<Translation>) {
+        val project = e.project ?: return
+
         ApplicationManager.getApplication().invokeLater {
             if (translations.isNotEmpty()) {
                 displayTranslations(e, FileMapper.getResourceFilesList(translations))
             } else {
-                showErrorDialog(e.project, "Translations not found")
+                showErrorDialog(project, "Translations not found for this KEY.", "Not Found")
             }
         }
     }
@@ -135,12 +140,14 @@ class GetTranslationAction: AnAction() {
         toolWindow.show()
     }
 
-    private fun showErrorDialog(project: Project?, message: String) {
-        Messages.showMessageDialog(
-            project,
-            message,
-            "Error",
-            Messages.getErrorIcon()
+    private fun showErrorDialog(project: Project, message: String, title: String? = null) {
+        Notifications.Bus.notify(
+            Notification(
+                project.name,
+                title ?: "PhraseDroid: error!",
+                message,
+                NotificationType.ERROR
+            )
         )
     }
 }
