@@ -4,7 +4,7 @@ import you.thiago.phrasedroid.data.Locale
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.data.Translation
 
-object FileMapper {
+object ResFileMapper {
 
     fun getResourceFilesList(translations: List<Translation>): List<ResourceFile> {
         return translations

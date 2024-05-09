@@ -27,7 +27,7 @@ import you.thiago.phrasedroid.toolbar.LoadingContent
 import you.thiago.phrasedroid.toolbar.ToolwindowContent
 import you.thiago.phrasedroid.toolbar.TranslationsContent
 import you.thiago.phrasedroid.util.FileUtil
-import you.thiago.phrasedroid.util.FileMapper
+import you.thiago.phrasedroid.util.ResFileMapper
 import you.thiago.phrasedroid.util.JsonUtil
 
 class GetTranslationAction: AnAction() {
@@ -86,7 +86,7 @@ class GetTranslationAction: AnAction() {
 
         ApplicationManager.getApplication().invokeLater {
             if (translations.isNotEmpty()) {
-                displayTranslations(e, FileMapper.getResourceFilesList(translations))
+                displayTranslations(e, ResFileMapper.getResourceFilesList(translations))
             } else {
                 showErrorDialog(project, "Translations not found for this KEY.", "Not Found")
                 closeToolwindow(project)
