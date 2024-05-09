@@ -41,34 +41,37 @@ class TranslationsContent(
 
     private fun buildHeaderPanel(): JPanel {
         val headerPanel = JPanel(BorderLayout())
-        headerPanel.border = BorderFactory.createEmptyBorder(5, 0, 20, 10)
+        headerPanel.border = BorderFactory.createEmptyBorder(10, 0, 20, 5)
 
         val dropdownMenuButton = JButton()
         dropdownMenuButton.icon = AllIcons.Actions.More
         dropdownMenuButton.toolTipText = "Actions"
         dropdownMenuButton.border = null
         dropdownMenuButton.isContentAreaFilled = false
-        dropdownMenuButton.preferredSize = Dimension(24, 24)
+        dropdownMenuButton.preferredSize = Dimension(32, 32)
 
-        // Create a popup menu for the dropdown menu button
         val popupMenu = JPopupMenu()
 
-        // Add menu items to the popup menu
-        val closeAction = JMenuItem("Close")
-        closeAction.addActionListener { closeToolwindow() }
-        popupMenu.add(closeAction)
-
         val setMissingItemsAction1 = JMenuItem("Set English as default to missing items")
-        setMissingItemsAction1.addActionListener { /* Add action code here */ }
-        popupMenu.add(setMissingItemsAction1)
+        setMissingItemsAction1.border = BorderFactory.createEmptyBorder(10, 10, 5, 10)
+        setMissingItemsAction1.addActionListener { addMissingTranslations("en") }
 
         val setMissingItemsAction2 = JMenuItem("Set Portuguese as default to missing items")
-        setMissingItemsAction2.addActionListener { /* Add action code here */ }
+        setMissingItemsAction2.border = BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        setMissingItemsAction2.addActionListener { addMissingTranslations("pt") }
+
+        val closeAction = JMenuItem("Close")
+        closeAction.border = BorderFactory.createEmptyBorder(5, 10, 10, 10)
+        closeAction.addActionListener { closeToolwindow() }
+
+        popupMenu.add(setMissingItemsAction1)
         popupMenu.add(setMissingItemsAction2)
+        popupMenu.add(closeAction)
 
         // Add the popup menu to the dropdown menu button
-        dropdownMenuButton.addActionListener { dropdownMenuButton.componentPopupMenu.isVisible = !dropdownMenuButton.componentPopupMenu.isVisible }
-        dropdownMenuButton.componentPopupMenu = popupMenu
+        dropdownMenuButton.addActionListener {
+            popupMenu.show(dropdownMenuButton, 0, dropdownMenuButton.height)
+        }
 
         headerPanel.add(dropdownMenuButton, BorderLayout.EAST)
 
@@ -249,4 +252,8 @@ class TranslationsContent(
         .replace("<![CDATA[", """&lt;![CDATA[""")
         .replace("]]>", """]]&gt;""")
         .let { """<pre style="padding: 3px 4px;">${it}</pre>""" }
+
+    private fun addMissingTranslations(language: String) {
+        TODO("Not yet implemented")
+    }
 }
