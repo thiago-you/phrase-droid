@@ -8,7 +8,10 @@ object InputValidator {
         if (input.contains(" ")) {
             return ""
         }
+        if (input.length < 3) {
+            return ""
+        }
 
-        return input.uppercase()
+        return input.replace("-", "_").uppercase()
     }
 }
