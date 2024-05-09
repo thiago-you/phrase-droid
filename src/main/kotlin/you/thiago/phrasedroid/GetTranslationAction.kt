@@ -56,12 +56,7 @@ class GetTranslationAction: AnAction() {
         val icon = Messages.getInformationIcon().takeIf { !invalidKey } ?: Messages.getWarningIcon()
         val title = "Translation KEY:".takeIf { !invalidKey } ?: "Translation Key (invalid):"
 
-        val input = Messages.showInputDialog(
-            project,
-            title,
-            "PhraseDroid",
-            icon
-        )
+        val input = Messages.showInputDialog(project, title, "PhraseDroid", icon)
 
         FlashState.translationKey = input ?: ""
 
