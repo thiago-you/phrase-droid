@@ -1,8 +1,5 @@
 package you.thiago.phrasedroid
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -83,7 +80,7 @@ class GetTranslationAction: AnAction() {
         val validInput = InputValidator.validate(input)
 
         if (validInput.isBlank()) {
-            showWarningMessage(project, "Invalid translation key: $input")
+            NotificationUtil.warning(project, "Invalid translation key: $input")
         }
 
         return validInput
@@ -91,7 +88,7 @@ class GetTranslationAction: AnAction() {
 
     private fun validateSettings(project: Project, apiSettings: ApiSettings): Boolean {
         SettingsValidator.validate(apiSettings)?.also {
-            showErrorMessage(project, it)
+            NotificationUtil.error(project, it)
             return false
         }
 
@@ -112,7 +109,7 @@ class GetTranslationAction: AnAction() {
             if (translations.isNotEmpty()) {
                 displayTranslations(e, ResFileMapper.getResourceFilesList(translations))
             } else {
-                showWarningMessage(project, "Translations not found for this KEY.", "PhraseDroid: Not Found")
+                NotificationUtil.warning(project, "Translations not found for this KEY.", "PhraseDroid: Not Found")
                 closeToolwindow(project)
             }
         }
@@ -146,39 +143,6 @@ class GetTranslationAction: AnAction() {
         toolWindow.show()
     }
 
-    private fun showErrorMessage(project: Project, message: String, title: String? = null) {
-        Notifications.Bus.notify(
-            Notification(
-                project.name,
-                title ?: "PhraseDroid: error!",
-                message,
-                NotificationType.ERROR
-            )
-        )
-    }
-
-    private fun showWarningMessage(project: Project, message: String, title: String? = null) {
-        Notifications.Bus.notify(
-            Notification(
-                project.name,
-                title ?: "PhraseDroid: warning!",
-                message,
-                NotificationType.WARNING
-            )
-        )
-    }
-
-    private fun showSuccessMessage(project: Project) {
-        Notifications.Bus.notify(
-            Notification(
-                project.name,
-                "PhraseDroid: done!",
-                "Settings file created successfully!",
-                NotificationType.INFORMATION
-            )
-        )
-    }
-
     private fun closeToolwindow(project: Project) {
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow = toolWindowManager.getToolWindow("PhraseDroid")
@@ -200,7 +164,7 @@ class GetTranslationAction: AnAction() {
         if (confirm == Messages.OK) {
             createSettingsFile(project)
         } else {
-            showErrorMessage(project, "Failed to load API configuration. Check if JSON settings file exists.")
+            NotificationUtil.error(project, "Failed to load API configuration. Check if JSON settings file exists.")
         }
     }
 
@@ -208,9 +172,9 @@ class GetTranslationAction: AnAction() {
         val createdFile = createFileAtProjectRoot(project)
 
         if (createdFile != null) {
-            showSuccessMessage(project)
+            NotificationUtil.success(project, "Settings file created successfully!")
         } else {
-            showErrorMessage(project, "Failed to create file settings.json.")
+            NotificationUtil.error(project, "Failed to create file settings.json.")
         }
     }
 

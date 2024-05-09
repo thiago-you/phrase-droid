@@ -1,8 +1,5 @@
 package you.thiago.phrasedroid
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -15,6 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDocument
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.state.FlashState
+import you.thiago.phrasedroid.util.NotificationUtil
 
 class WriteTranslationsAction: AnAction() {
 
@@ -29,9 +27,9 @@ class WriteTranslationsAction: AnAction() {
             runCatching {
                 writeResources(project, FlashState.translations)
             }.onSuccess {
-                showSuccessMessage(project)
+                NotificationUtil.success(project, "Translations added successfully!")
             }.onFailure {
-                showErrorMessage(project, it.message ?: "Unknown error")
+                NotificationUtil.error(project, "Error adding translations: ${it.message ?: "Unknown error"}")
             }
         }
     }
@@ -87,27 +85,5 @@ class WriteTranslationsAction: AnAction() {
         val regex = "<string name=\"${resource.name}\">[\\s\\S]*?</string>".toRegex()
         val updatedContent = regex.replace(docContent) { resource.content }
         document.setText(updatedContent)
-    }
-
-    private fun showSuccessMessage(project: Project) {
-        Notifications.Bus.notify(
-            Notification(
-                project.name,
-                "PhraseDroid: done!",
-                "Translations added successfully!",
-                NotificationType.INFORMATION
-            )
-        )
-    }
-
-    private fun showErrorMessage(project: Project, message: String) {
-        Notifications.Bus.notify(
-            Notification(
-                project.name,
-                "PhraseDroid: error!",
-                "Error adding translations: $message",
-                NotificationType.ERROR
-            )
-        )
     }
 }

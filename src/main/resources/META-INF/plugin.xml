@@ -69,6 +69,10 @@
                     icon="AllIcons.Nodes.PropertyRead"
                     anchor="right"
                     factoryClass="you.thiago.phrasedroid.toolbar.SidebarWindow"/>
+
+        <notificationGroup id="PhraseDroidNotification"
+                           displayType="BALLOON"
+                           key="notification.group.name"/>
     </extensions>
 
     <actions>
