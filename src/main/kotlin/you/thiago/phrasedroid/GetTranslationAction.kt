@@ -1,5 +1,6 @@
 package you.thiago.phrasedroid
 
+import com.intellij.lang.Language
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
@@ -8,9 +9,14 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
 import com.intellij.ui.content.ContentFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +34,7 @@ import you.thiago.phrasedroid.toolbar.ToolwindowContent
 import you.thiago.phrasedroid.toolbar.TranslationsContent
 import you.thiago.phrasedroid.util.FileLoader
 import you.thiago.phrasedroid.util.FileMapper
+import you.thiago.phrasedroid.util.JsonTemplate
 import you.thiago.phrasedroid.util.JsonUtil
 import java.nio.file.Paths
 
@@ -42,7 +49,7 @@ class GetTranslationAction: AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val apiSettings = getJsonData(e) ?: return showErrorDialog(project, "Failed to load API configuration. Check if JSON settings file is available.")
+        val apiSettings = getJsonData(e) ?: return showAddSettingsJsonDialog(project)
 
         val input = requireTranslationKey(project)
 
@@ -152,11 +159,67 @@ class GetTranslationAction: AnAction() {
         )
     }
 
+    private fun showSuccessMessage(project: Project) {
+        Notifications.Bus.notify(
+            Notification(
+                project.name,
+                "PhraseDroid: done!",
+                "Settings file created successfully!",
+                NotificationType.INFORMATION
+            )
+        )
+    }
+
     private fun closeToolwindow(project: Project) {
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow = toolWindowManager.getToolWindow("PhraseDroid")
 
         toolWindow?.contentManager?.removeAllContents(false)
         toolWindow?.hide(null)
+    }
+
+    private fun showAddSettingsJsonDialog(project: Project) {
+        showErrorDialog(project, "Failed to load API configuration. Check if JSON settings file is available.")
+
+        val confirm = Messages.showOkCancelDialog(
+            project,
+            "Settings file not found. Want to create the JSON file with the settings template?",
+            "Settings File",
+            "Create File",
+            "Cancel",
+            Messages.getWarningIcon()
+        )
+
+        if (confirm == Messages.OK) {
+            createSettingsFile(project)
+        }
+    }
+
+    private fun createSettingsFile(project: Project) {
+        val content = JsonTemplate.get().trimIndent()
+
+        val createdFile = createFileAtProjectRoot(project, content)
+
+        if (createdFile != null) {
+            showSuccessMessage(project)
+        } else {
+            showErrorDialog(project, "Failed to create file settings.json.")
+        }
+    }
+
+    private fun createFileAtProjectRoot(project: Project, content: String): VirtualFile? {
+        return ApplicationManager.getApplication().runWriteAction<VirtualFile> {
+            val baseDir = project.guessProjectDir() ?: return@runWriteAction null
+
+            val fileName = "phrase-settings.json"
+
+            runCatching {
+                return@runWriteAction baseDir
+                    .findOrCreateChildData(this, fileName)
+                    .apply { setBinaryContent(content.toByteArray()) }
+            }
+
+            return@runWriteAction null
+        }
     }
 }
