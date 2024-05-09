@@ -27,6 +27,10 @@ object TranslationUtil {
     }
 
     private fun addMarkupToContent(content: String): String {
+        if (content.trim().isBlank()) {
+            return content
+        }
+
         val escapedContent = content.replace("\n", " ")
             .replace("""\\\\'""", "'")
             .replace("""\\\'""", "'")

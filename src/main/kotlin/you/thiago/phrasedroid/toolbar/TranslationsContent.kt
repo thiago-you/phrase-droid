@@ -8,7 +8,6 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.util.ui.UIUtil
 import you.thiago.phrasedroid.WriteTranslationsAction
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.state.FlashState
@@ -29,14 +28,16 @@ class TranslationsContent(
     private val controlsPanel: JPanel = buildControlsPanel()
 
     private var hasEscapedData = false
-    private var isUpdateSelected = false
+    private var isAllowUpdateSelected = false
+    private var isAllowEmptyValueSelected = false
 
     init {
         contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
         contentPanel.border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
         contentPanel.add(buildHeaderPanel())
         contentPanel.add(controlsPanel)
-        contentPanel.add(buildCheckboxPanel())
+        contentPanel.add(buildCheckboxUpdatePanel())
+        contentPanel.add(buildCheckboxEmptyValuePanel())
         contentPanel.add(scrollablePanel)
     }
 
@@ -153,11 +154,26 @@ class TranslationsContent(
         return controlsPanel
     }
 
-    private fun buildCheckboxPanel(): JPanel {
+    private fun buildCheckboxUpdatePanel(): JPanel {
         val checkBox = JCheckBox("Allow resource string update if already exists")
 
         checkBox.addActionListener { _ ->
-            isUpdateSelected = checkBox.isSelected
+            isAllowUpdateSelected = checkBox.isSelected
+        }
+
+        val checkBoxPanel = JPanel()
+        checkBoxPanel.layout = BorderLayout()
+        checkBoxPanel.border = BorderFactory.createEmptyBorder(10, 20, 0, 20)
+        checkBoxPanel.add(checkBox, BorderLayout.WEST)
+
+        return checkBoxPanel
+    }
+
+    private fun buildCheckboxEmptyValuePanel(): JPanel {
+        val checkBox = JCheckBox("Allow include empty resource string into file")
+
+        checkBox.addActionListener { _ ->
+            isAllowEmptyValueSelected = checkBox.isSelected
         }
 
         val checkBoxPanel = JPanel()
@@ -171,7 +187,8 @@ class TranslationsContent(
     private fun executeWriteTranslationActions() {
         ApplicationManager.getApplication().invokeLater {
             FlashState.translations = translations
-            FlashState.isUpdateSelected = isUpdateSelected
+            FlashState.isAllowUpdateSelected = isAllowUpdateSelected
+            FlashState.isAllowEmptyValueSelected = isAllowEmptyValueSelected
 
             ActionUtil.invokeAction(WriteTranslationsAction(), event.dataContext, event.place, null, null)
         }

@@ -53,8 +53,10 @@ class WriteTranslationsAction: AnAction() {
             val content = document.text
 
             if (!content.contains(resource.name)) {
-                addResourceIntoFile(document, resource)
-            } else if (FlashState.isUpdateSelected) {
+                if (resource.content.isNotBlank() || FlashState.isAllowEmptyValueSelected) {
+                    addResourceIntoFile(document, resource)
+                }
+            } else if (FlashState.isAllowUpdateSelected) {
                 updateResourceIntoFile(document, resource, content)
             }
         }
