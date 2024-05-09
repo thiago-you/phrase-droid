@@ -23,7 +23,7 @@ class AppSettingsComponent {
 
     private val settingsFilePathField = TextFieldWithBrowseButton()
 
-    private val defaultFileRelativePath by lazy { "/%s".format(SettingsEnum.RELATIVE_PATH.value) }
+    private val defaultFileRelativePath by lazy { "/%s".format(SettingsEnum.FILENAME.value) }
 
     init {
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)

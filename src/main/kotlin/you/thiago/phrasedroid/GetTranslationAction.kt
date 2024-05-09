@@ -1,6 +1,5 @@
 package you.thiago.phrasedroid
 
-import com.intellij.lang.Language
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
@@ -9,14 +8,10 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiFileFactory
 import com.intellij.ui.content.ContentFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,18 +20,15 @@ import kotlinx.coroutines.launch
 import you.thiago.phrasedroid.data.ApiSettings
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.data.Translation
-import you.thiago.phrasedroid.enums.SettingsEnum
 import you.thiago.phrasedroid.network.Api
 import you.thiago.phrasedroid.state.AppState
 import you.thiago.phrasedroid.state.FlashState
 import you.thiago.phrasedroid.toolbar.LoadingContent
 import you.thiago.phrasedroid.toolbar.ToolwindowContent
 import you.thiago.phrasedroid.toolbar.TranslationsContent
-import you.thiago.phrasedroid.util.FileLoader
+import you.thiago.phrasedroid.util.FileUtil
 import you.thiago.phrasedroid.util.FileMapper
-import you.thiago.phrasedroid.util.JsonTemplate
 import you.thiago.phrasedroid.util.JsonUtil
-import java.nio.file.Paths
 
 class GetTranslationAction: AnAction() {
 
@@ -49,7 +41,7 @@ class GetTranslationAction: AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
 
-        val apiSettings = getJsonData(e) ?: return showAddSettingsJsonDialog(project)
+        val apiSettings = getJsonData(project) ?: return showAddSettingsJsonDialog(project)
 
         val input = requireTranslationKey(project)
 
@@ -72,32 +64,14 @@ class GetTranslationAction: AnAction() {
         return input
     }
 
-    private fun getJsonData(e: AnActionEvent): ApiSettings? {
-        if (settingsFilePath.isBlank()) {
-            return getVirtualFileByProjectRelativePath(e.project!!)
+    private fun getJsonData(project: Project): ApiSettings? {
+        val file = if (settingsFilePath.isNotEmpty()) {
+            FileUtil.getVirtualFileByPath(settingsFilePath)
+        } else {
+            FileUtil.getVirtualFileByProjectRelativePath(project)
         }
 
-        val file = FileLoader.getVirtualFileByPath(settingsFilePath)
-
-        if (file != null) {
-            return JsonUtil.readConfig(file)
-        }
-
-        return null
-    }
-
-    private fun getVirtualFileByProjectRelativePath(project: Project): ApiSettings? {
-        val basePath = project.basePath ?: return null
-
-        val absolutePath = Paths.get(basePath, SettingsEnum.RELATIVE_PATH.value).toString()
-
-        val file = FileLoader.getVirtualFileByPath(absolutePath)
-
-        if (file != null) {
-            return JsonUtil.readConfig(file)
-        }
-
-        return null
+        return file?.let { JsonUtil.readConfig(it) }
     }
 
     private fun fetchApiData(e: AnActionEvent, apiSettings: ApiSettings) {
@@ -196,9 +170,7 @@ class GetTranslationAction: AnAction() {
     }
 
     private fun createSettingsFile(project: Project) {
-        val content = JsonTemplate.get().trimIndent()
-
-        val createdFile = createFileAtProjectRoot(project, content)
+        val createdFile = createFileAtProjectRoot(project)
 
         if (createdFile != null) {
             showSuccessMessage(project)
@@ -207,16 +179,10 @@ class GetTranslationAction: AnAction() {
         }
     }
 
-    private fun createFileAtProjectRoot(project: Project, content: String): VirtualFile? {
+    private fun createFileAtProjectRoot(project: Project): VirtualFile? {
         return ApplicationManager.getApplication().runWriteAction<VirtualFile> {
-            val baseDir = project.guessProjectDir() ?: return@runWriteAction null
-
-            val fileName = "phrase-settings.json"
-
             runCatching {
-                return@runWriteAction baseDir
-                    .findOrCreateChildData(this, fileName)
-                    .apply { setBinaryContent(content.toByteArray()) }
+                return@runWriteAction FileUtil.createSettingsFileFromTemplate(project)
             }
 
             return@runWriteAction null
