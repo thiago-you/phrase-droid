@@ -26,10 +26,7 @@ import you.thiago.phrasedroid.state.FlashState
 import you.thiago.phrasedroid.toolbar.LoadingContent
 import you.thiago.phrasedroid.toolbar.ToolwindowContent
 import you.thiago.phrasedroid.toolbar.TranslationsContent
-import you.thiago.phrasedroid.util.FileUtil
-import you.thiago.phrasedroid.util.ResFileMapper
-import you.thiago.phrasedroid.util.JsonUtil
-import you.thiago.phrasedroid.util.SettingsValidator
+import you.thiago.phrasedroid.util.*
 
 class GetTranslationAction: AnAction() {
 
@@ -55,15 +52,24 @@ class GetTranslationAction: AnAction() {
         }
     }
 
-    private fun requireTranslationKey(project: Project): String? {
+    private fun requireTranslationKey(project: Project, invalidKey: Boolean = false): String? {
+        val icon = Messages.getInformationIcon().takeIf { !invalidKey } ?: Messages.getWarningIcon()
+        val title = "Translation KEY:".takeIf { !invalidKey } ?: "Translation Key (invalid):"
+
         val input = Messages.showInputDialog(
             project,
-            "Translation KEY:",
+            title,
             "PhraseDroid",
-            Messages.getInformationIcon()
+            icon
         )
 
         FlashState.translationKey = input ?: ""
+
+        if (!input.isNullOrBlank()) {
+            return validateInput(project, input).ifBlank {
+                requireTranslationKey(project, true)
+            }
+        }
 
         return input
     }
@@ -76,6 +82,16 @@ class GetTranslationAction: AnAction() {
         }
 
         return file?.let { JsonUtil.readConfig(it) }
+    }
+
+    private fun validateInput(project: Project, input: String?): String {
+        val validInput = InputValidator.validate(input)
+
+        if (validInput.isBlank()) {
+            showErrorDialog(project, "Invalid translation key: $input")
+        }
+
+        return validInput
     }
 
     private fun validateSettings(project: Project, apiSettings: ApiSettings): Boolean {
@@ -101,7 +117,7 @@ class GetTranslationAction: AnAction() {
             if (translations.isNotEmpty()) {
                 displayTranslations(e, ResFileMapper.getResourceFilesList(translations))
             } else {
-                showErrorDialog(project, "Translations not found for this KEY.", "Not Found")
+                showErrorDialog(project, "Translations not found for this KEY.", "PhraseDroid: Not Found")
                 closeToolwindow(project)
             }
         }
