@@ -8,11 +8,13 @@ import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.ui.UIUtil
 import you.thiago.phrasedroid.WriteTranslationsAction
 import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.state.FlashState
 import you.thiago.phrasedroid.util.TranslationUtil
 import java.awt.BorderLayout
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Font
@@ -152,7 +154,7 @@ class TranslationsContent(
     }
 
     private fun buildCheckboxPanel(): JPanel {
-        val checkBox = JCheckBox("Allow resource string update if already exists?")
+        val checkBox = JCheckBox("Allow resource string update if already exists")
 
         checkBox.addActionListener { _ ->
             isUpdateSelected = checkBox.isSelected
@@ -180,8 +182,18 @@ class TranslationsContent(
         panel.layout = BoxLayout(panel, BoxLayout.Y_AXIS)
 
         translations.forEach { resource ->
-            val fileNameLabel = JBLabel("%s:".format(resource.locale))
+            val name = if (resource.translation.isNotEmpty()) {
+                "%s:".format(resource.locale)
+            } else {
+                "%s (missing):".format(resource.locale)
+            }
+
+            val fileNameLabel = JBLabel(name)
             fileNameLabel.font = fileNameLabel.font.deriveFont(Font.BOLD)
+
+            if (resource.translation.isEmpty()) {
+                fileNameLabel.foreground = Color.RED
+            }
 
             val fileNamePanel = JPanel(BorderLayout())
             fileNamePanel.add(fileNameLabel, BorderLayout.PAGE_START)
