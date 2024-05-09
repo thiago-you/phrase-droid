@@ -83,7 +83,7 @@ class GetTranslationAction: AnAction() {
         val validInput = InputValidator.validate(input)
 
         if (validInput.isBlank()) {
-            showErrorDialog(project, "Invalid translation key: $input")
+            showWarningMessage(project, "Invalid translation key: $input")
         }
 
         return validInput
@@ -91,7 +91,7 @@ class GetTranslationAction: AnAction() {
 
     private fun validateSettings(project: Project, apiSettings: ApiSettings): Boolean {
         SettingsValidator.validate(apiSettings)?.also {
-            showErrorDialog(project, it)
+            showErrorMessage(project, it)
             return false
         }
 
@@ -112,7 +112,7 @@ class GetTranslationAction: AnAction() {
             if (translations.isNotEmpty()) {
                 displayTranslations(e, ResFileMapper.getResourceFilesList(translations))
             } else {
-                showErrorDialog(project, "Translations not found for this KEY.", "PhraseDroid: Not Found")
+                showWarningMessage(project, "Translations not found for this KEY.", "PhraseDroid: Not Found")
                 closeToolwindow(project)
             }
         }
@@ -146,13 +146,24 @@ class GetTranslationAction: AnAction() {
         toolWindow.show()
     }
 
-    private fun showErrorDialog(project: Project, message: String, title: String? = null) {
+    private fun showErrorMessage(project: Project, message: String, title: String? = null) {
         Notifications.Bus.notify(
             Notification(
                 project.name,
                 title ?: "PhraseDroid: error!",
                 message,
                 NotificationType.ERROR
+            )
+        )
+    }
+
+    private fun showWarningMessage(project: Project, message: String, title: String? = null) {
+        Notifications.Bus.notify(
+            Notification(
+                project.name,
+                title ?: "PhraseDroid: warning!",
+                message,
+                NotificationType.WARNING
             )
         )
     }
@@ -189,7 +200,7 @@ class GetTranslationAction: AnAction() {
         if (confirm == Messages.OK) {
             createSettingsFile(project)
         } else {
-            showErrorDialog(project, "Failed to load API configuration. Check if JSON settings file exists.")
+            showErrorMessage(project, "Failed to load API configuration. Check if JSON settings file exists.")
         }
     }
 
@@ -199,7 +210,7 @@ class GetTranslationAction: AnAction() {
         if (createdFile != null) {
             showSuccessMessage(project)
         } else {
-            showErrorDialog(project, "Failed to create file settings.json.")
+            showErrorMessage(project, "Failed to create file settings.json.")
         }
     }
 
