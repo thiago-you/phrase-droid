@@ -60,7 +60,7 @@ class TranslationsContent(
         setMissingItemsAction2.border = BorderFactory.createEmptyBorder(5, 10, 5, 10)
         setMissingItemsAction2.addActionListener { addMissingTranslations("pt") }
 
-        val closeAction = JMenuItem("Close")
+        val closeAction = JMenuItem("Finish")
         closeAction.border = BorderFactory.createEmptyBorder(5, 10, 10, 10)
         closeAction.addActionListener { closeToolwindow() }
 
