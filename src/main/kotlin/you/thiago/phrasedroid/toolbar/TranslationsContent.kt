@@ -29,7 +29,6 @@ class TranslationsContent(
 
     private var hasEscapedData = false
     private var isAllowUpdateSelected = false
-    private var isAllowEmptyValueSelected = false
 
     init {
         contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
@@ -37,7 +36,6 @@ class TranslationsContent(
         contentPanel.add(buildHeaderPanel())
         contentPanel.add(controlsPanel)
         contentPanel.add(buildCheckboxUpdatePanel())
-        contentPanel.add(buildCheckboxEmptyValuePanel())
         contentPanel.add(scrollablePanel)
     }
 
@@ -169,26 +167,10 @@ class TranslationsContent(
         return checkBoxPanel
     }
 
-    private fun buildCheckboxEmptyValuePanel(): JPanel {
-        val checkBox = JCheckBox("Allow include empty resource string into file")
-
-        checkBox.addActionListener { _ ->
-            isAllowEmptyValueSelected = checkBox.isSelected
-        }
-
-        val checkBoxPanel = JPanel()
-        checkBoxPanel.layout = BorderLayout()
-        checkBoxPanel.border = BorderFactory.createEmptyBorder(10, 20, 0, 20)
-        checkBoxPanel.add(checkBox, BorderLayout.WEST)
-
-        return checkBoxPanel
-    }
-
     private fun executeWriteTranslationActions() {
         ApplicationManager.getApplication().invokeLater {
             FlashState.translations = translations
             FlashState.isAllowUpdateSelected = isAllowUpdateSelected
-            FlashState.isAllowEmptyValueSelected = isAllowEmptyValueSelected
 
             ActionUtil.invokeAction(WriteTranslationsAction(), event.dataContext, event.place, null, null)
         }
