@@ -50,11 +50,11 @@ object Api {
                 headers {
                     append(HttpHeaders.Authorization, "Basic ${apiSettings.key}")
 
-                    if (apiSettings.agentEmail.isNotBlank()) {
-                        append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentEmail})")
+                    if (apiSettings.contactEmail.isNotBlank()) {
+                        append(HttpHeaders.UserAgent, "Android App (${apiSettings.contactEmail})")
                     }
-                    if (apiSettings.agentUrl.isNotBlank()) {
-                        append(HttpHeaders.UserAgent, "Android App (${apiSettings.agentUrl})")
+                    if (apiSettings.contactUrl.isNotBlank()) {
+                        append(HttpHeaders.UserAgent, "Android App (${apiSettings.contactUrl})")
                     }
                 }
             }

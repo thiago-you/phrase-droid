@@ -23,8 +23,8 @@ PhraseApp plugin for use in <strong>Android Studio</strong>.Useful for multi-lan
 {
   "id": "required: API project ID",
   "key": "required: API project auth key",
-  "agent_email": "optional: organization e-mail",
-  "agent_url": "optional: organization contact page"
+  "contact_email": "optional: organization e-mail",
+  "contact_url": "optional: organization contact page"
 }
 ```
 

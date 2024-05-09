@@ -29,6 +29,7 @@ import you.thiago.phrasedroid.toolbar.TranslationsContent
 import you.thiago.phrasedroid.util.FileUtil
 import you.thiago.phrasedroid.util.ResFileMapper
 import you.thiago.phrasedroid.util.JsonUtil
+import you.thiago.phrasedroid.util.SettingsValidator
 
 class GetTranslationAction: AnAction() {
 
@@ -40,12 +41,15 @@ class GetTranslationAction: AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-
-        val apiSettings = getJsonData(project) ?: return showAddSettingsJsonDialog(project)
+        val apiSettings = loadSettings(project) ?: return showCreateSettingsJsonDialog(project)
 
         val input = requireTranslationKey(project)
 
-        if (!input.isNullOrBlank()) {
+        if (input.isNullOrBlank()) {
+            return
+        }
+
+        if (validateSettings(project, apiSettings)) {
             displayLoadingWindow(project)
             fetchApiData(e, apiSettings)
         }
@@ -64,7 +68,7 @@ class GetTranslationAction: AnAction() {
         return input
     }
 
-    private fun getJsonData(project: Project): ApiSettings? {
+    private fun loadSettings(project: Project): ApiSettings? {
         val file = if (settingsFilePath.isNotEmpty()) {
             FileUtil.getVirtualFileByPath(settingsFilePath)
         } else {
@@ -72,6 +76,15 @@ class GetTranslationAction: AnAction() {
         }
 
         return file?.let { JsonUtil.readConfig(it) }
+    }
+
+    private fun validateSettings(project: Project, apiSettings: ApiSettings): Boolean {
+        SettingsValidator.validate(apiSettings)?.also {
+            showErrorDialog(project, it)
+            return false
+        }
+
+        return true
     }
 
     private fun fetchApiData(e: AnActionEvent, apiSettings: ApiSettings) {
@@ -152,9 +165,7 @@ class GetTranslationAction: AnAction() {
         toolWindow?.hide(null)
     }
 
-    private fun showAddSettingsJsonDialog(project: Project) {
-        showErrorDialog(project, "Failed to load API configuration. Check if JSON settings file is available.")
-
+    private fun showCreateSettingsJsonDialog(project: Project) {
         val confirm = Messages.showOkCancelDialog(
             project,
             "Settings file not found. Want to create the JSON file with the settings template?",
@@ -166,6 +177,8 @@ class GetTranslationAction: AnAction() {
 
         if (confirm == Messages.OK) {
             createSettingsFile(project)
+        } else {
+            showErrorDialog(project, "Failed to load API configuration. Check if JSON settings file exists.")
         }
     }
 
