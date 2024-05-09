@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDocument
@@ -60,13 +61,29 @@ class WriteTranslationsAction: AnAction() {
     }
 
     private fun addResourceIntoFile(document: Document, resource: ResourceFile) {
-        val lastLineStartOffset = document.getLineStartOffset(document.lineCount - 1)
+        val lineCount = document.lineCount
+        var lastNonBlankLine = lineCount - 1
+
+        for (i in lineCount - 1 downTo 0) {
+            val lineText = TextRange(document.getLineStartOffset(i), document.getLineEndOffset(i))
+                .let { document.getText(it) }
+                .trim()
+                .takeIf { it.isNotEmpty() }
+
+            if (!lineText.isNullOrBlank()) {
+                lastNonBlankLine = i
+                break
+            }
+        }
+
+        val lastLineStartOffset = document.getLineStartOffset(lastNonBlankLine)
+
         document.insertString(lastLineStartOffset, "\t${resource.content}\n")
     }
 
-    private fun updateResourceIntoFile(document: Document, resource: ResourceFile, content: String) {
+    private fun updateResourceIntoFile(document: Document, resource: ResourceFile, docContent: String) {
         val regex = "<string name=\"${resource.name}\">[\\s\\S]*?</string>".toRegex()
-        val updatedContent = regex.replace(content) { resource.content }
+        val updatedContent = regex.replace(docContent) { resource.content }
         document.setText(updatedContent)
     }
 
