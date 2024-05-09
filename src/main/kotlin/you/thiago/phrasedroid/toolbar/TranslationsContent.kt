@@ -152,7 +152,7 @@ class TranslationsContent(
     }
 
     private fun buildCheckboxPanel(): JPanel {
-        val checkBox = JCheckBox("Allow resource update?")
+        val checkBox = JCheckBox("Allow resource string update if already exists?")
 
         checkBox.addActionListener { _ ->
             isUpdateSelected = checkBox.isSelected
