@@ -82,13 +82,25 @@
             <action
                 id="you.thiago.phrasedroid.GetTranslationAction"
                 class="you.thiago.phrasedroid.GetTranslationAction"
-                text="PhraseDroid: Run"
+                text="Set translations from API..."
                 description="Get translations from API using KEY"
                 icon="AllIcons.Nodes.PropertyRead">
                 <keyboard-shortcut keymap="$default" first-keystroke="control shift P"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift P"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control shift P"/>
             </action>
+
+            <action
+                    id="you.thiago.phrasedroid.QuickTranslationAction"
+                    class="you.thiago.phrasedroid.QuickTranslationAction"
+                    text="Quack set translations from API..."
+                    description="Get translations from API using KEY resumed"
+                    icon="AllIcons.Nodes.PropertyRead">
+                <keyboard-shortcut keymap="$default" first-keystroke="control shift O"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift O"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control shift O"/>
+            </action>
+
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </group>
     </actions>

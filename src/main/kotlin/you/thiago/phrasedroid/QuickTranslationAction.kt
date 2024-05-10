@@ -3,29 +3,24 @@ package you.thiago.phrasedroid
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.ToolWindow
-import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.ui.content.ContentFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import you.thiago.phrasedroid.data.ApiSettings
-import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.network.Api
 import you.thiago.phrasedroid.state.AppState
 import you.thiago.phrasedroid.state.FlashState
-import you.thiago.phrasedroid.toolbar.LoadingContent
-import you.thiago.phrasedroid.toolbar.ToolwindowContent
-import you.thiago.phrasedroid.toolbar.TranslationsContent
 import you.thiago.phrasedroid.util.*
 
-class GetTranslationAction: AnAction() {
+class QuickTranslationAction: AnAction() {
 
     private val settingsFilePath by lazy { AppState().getInstance().state.settingsFilePath }
 
@@ -44,16 +39,17 @@ class GetTranslationAction: AnAction() {
         }
 
         if (validateSettings(project, apiSettings)) {
-            displayLoadingWindow(project)
-            fetchApiData(e, apiSettings)
+            ProgressManager.getInstance().runProcessWithProgressSynchronously({
+                fetchApiData(e, apiSettings)
+            }, "Loading...", false, project)
         }
     }
 
     private fun requireTranslationKey(project: Project, invalidKey: Boolean = false): String? {
         val icon = Messages.getInformationIcon().takeIf { !invalidKey } ?: Messages.getWarningIcon()
-        val message = "Translation KEY:".takeIf { !invalidKey } ?: "Translation Key (invalid):"
+        val message = "[Resumed] Translation KEY:".takeIf { !invalidKey } ?: "[Resumed] Translation Key (invalid):"
 
-        val input = Messages.showInputDialog(project, message, "PhraseDroid", icon)
+        val input = Messages.showInputDialog(project, message, "PhraseDroid [R]", icon)
 
         FlashState.translationKey = input ?: ""
 
@@ -98,57 +94,20 @@ class GetTranslationAction: AnAction() {
     private fun fetchApiData(e: AnActionEvent, apiSettings: ApiSettings) {
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             val list = Api.fetchTranslations(apiSettings)
-            setupTranslationsWindow(e, list)
+            writeTranslations(e, list)
         }
     }
 
-    private fun setupTranslationsWindow(e: AnActionEvent, translations: List<Translation>) {
+    private fun writeTranslations(e: AnActionEvent, translations: List<Translation>) {
         val project = e.project ?: return
 
         ApplicationManager.getApplication().invokeLater {
             if (translations.isNotEmpty()) {
-                displayTranslations(e, ResFileMapper.getResourceFilesList(translations))
+                executeWriteTranslationActions(e, translations)
             } else {
                 NotificationUtil.warning(project, "Translations not found for this KEY.", "PhraseDroid: Not Found")
-                closeToolwindow(project)
             }
         }
-    }
-
-    private fun displayLoadingWindow(project: Project) {
-        setupToolbarContent(project, LoadingContent(), "Loading")
-    }
-
-    private fun displayTranslations(e: AnActionEvent, resourceFiles: List<ResourceFile>) {
-        val project = e.project ?: return
-        setupToolbarContent(project, TranslationsContent(e, resourceFiles), "Confirmation")
-    }
-
-    private fun getToolWindow(project: Project): ToolWindow? {
-        val toolWindowManager = ToolWindowManager.getInstance(project)
-        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid")
-
-        return toolWindow
-    }
-
-    private fun setupToolbarContent(project: Project, toolWindowContent: ToolwindowContent, name: String) {
-        val toolWindow = getToolWindow(project) ?: return
-
-        val content = ContentFactory
-            .getInstance()
-            .createContent(toolWindowContent.contentPanel, name, false)
-
-        toolWindow.contentManager.removeAllContents(false)
-        toolWindow.contentManager.addContent(content)
-        toolWindow.show()
-    }
-
-    private fun closeToolwindow(project: Project) {
-        val toolWindowManager = ToolWindowManager.getInstance(project)
-        val toolWindow = toolWindowManager.getToolWindow("PhraseDroid")
-
-        toolWindow?.contentManager?.removeAllContents(false)
-        toolWindow?.hide(null)
     }
 
     private fun showCreateSettingsJsonDialog(project: Project) {
@@ -185,6 +144,15 @@ class GetTranslationAction: AnAction() {
             }
 
             return@runWriteAction null
+        }
+    }
+
+    private fun executeWriteTranslationActions(e: AnActionEvent, translations: List<Translation>) {
+        ApplicationManager.getApplication().invokeLater {
+            FlashState.translations = ResFileMapper.getResourceFilesList(translations)
+            FlashState.isAllowUpdateSelected = true
+
+            ActionUtil.invokeAction(WriteTranslationsAction(), e.dataContext, e.place, null, null)
         }
     }
 }
