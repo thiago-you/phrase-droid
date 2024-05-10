@@ -52,23 +52,27 @@ class TranslationsContent(
 
         val popupMenu = JPopupMenu()
 
-        val setMissingItemsAction1 = JMenuItem("Set English as default to missing items")
+        val setMissingItemsAction1 = JMenuItem("Set \"EN\" as default translation on missing items")
         setMissingItemsAction1.border = BorderFactory.createEmptyBorder(10, 10, 5, 10)
-        setMissingItemsAction1.addActionListener { addMissingTranslations("en") }
+        setMissingItemsAction1.addActionListener { setDefaultTranslationOnMissingItems("en") }
 
-        val setMissingItemsAction2 = JMenuItem("Set Portuguese as default to missing items")
-        setMissingItemsAction2.border = BorderFactory.createEmptyBorder(5, 10, 5, 10)
-        setMissingItemsAction2.addActionListener { addMissingTranslations("pt") }
+        val setMissingItemsAction2 = JMenuItem("Set \"PT\" as default translation on missing items")
+        setMissingItemsAction2.border = BorderFactory.createEmptyBorder(10, 10, 5, 10)
+        setMissingItemsAction2.addActionListener { setDefaultTranslationOnMissingItems("pt") }
 
-        val closeAction = JMenuItem("Finish")
-        closeAction.border = BorderFactory.createEmptyBorder(5, 10, 10, 10)
+        val removeMissingItemsTranslationAction = JMenuItem("Remove default translation on missing items")
+        removeMissingItemsTranslationAction.border = BorderFactory.createEmptyBorder(10, 10, 5, 10)
+        removeMissingItemsTranslationAction.addActionListener { removeTranslationOnMissingItems() }
+
+        val closeAction = JMenuItem("Finish (F)")
+        closeAction.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
         closeAction.addActionListener { closeToolwindow() }
 
         popupMenu.add(setMissingItemsAction1)
         popupMenu.add(setMissingItemsAction2)
+        popupMenu.add(removeMissingItemsTranslationAction)
         popupMenu.add(closeAction)
 
-        // Add the popup menu to the dropdown menu button
         dropdownMenuButton.addActionListener {
             popupMenu.show(dropdownMenuButton, 0, dropdownMenuButton.height)
         }
@@ -253,7 +257,17 @@ class TranslationsContent(
         .replace("]]>", """]]&gt;""")
         .let { """<pre style="padding: 3px 4px;">${it}</pre>""" }
 
-    private fun addMissingTranslations(language: String) {
-        TODO("Not yet implemented")
+    private fun setDefaultTranslationOnMissingItems(language: String) {
+        translations = TranslationUtil.setDefaultLanguageToMissingItems(translations, language)
+
+        updateScrollablePanel(translations)
+        updateControlsPanel()
+    }
+
+    private fun removeTranslationOnMissingItems() {
+        translations = TranslationUtil.removeDefaultLanguageOnMissingItems(translations)
+
+        updateScrollablePanel(translations)
+        updateControlsPanel()
     }
 }

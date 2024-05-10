@@ -22,6 +22,30 @@ object TranslationUtil {
         }
     }
 
+    fun setDefaultLanguageToMissingItems(translations: List<ResourceFile>, language: String): List<ResourceFile> {
+        return translations.map { item ->
+            return@map item.apply {
+                if (sourceTranslation.isBlank()) {
+                    translation = translations.firstOrNull { it.language == language }?.translation.toString()
+                }
+
+                content = getTranslationContent(name, translation)
+            }
+        }
+    }
+
+    fun removeDefaultLanguageOnMissingItems(translations: List<ResourceFile>): List<ResourceFile> {
+        return translations.map { item ->
+            return@map item.apply {
+                if (sourceTranslation.isBlank()) {
+                    translation = sourceTranslation
+                }
+
+                content = getTranslationContent(name, translation)
+            }
+        }
+    }
+
     fun escapeSingleQuote(content: String): String {
         return content.replace("'", """\'""")
     }
