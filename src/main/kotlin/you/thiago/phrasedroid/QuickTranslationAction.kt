@@ -5,17 +5,14 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.util.ProgressIndicatorBase
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.vcs.changes.RunnableBackgroundableWrapper
 import com.intellij.openapi.vfs.VirtualFile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import you.thiago.phrasedroid.data.ApiSettings
 import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.network.Api
@@ -42,22 +39,19 @@ class QuickTranslationAction: AnAction() {
         }
 
         if (validateSettings(project, apiSettings)) {
-            ProgressManager.getInstance().runProcessWithProgressAsynchronously(
-                RunnableBackgroundableWrapper(project, "Loading...") {
-                    fetchApiData(e, apiSettings)
-                },
-                getProgressIndicator()
-            )
+            val task = object : Task.Backgroundable(project, "PhraseDroid", true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
+                override fun run(indicator: ProgressIndicator) {
+                    indicator.isIndeterminate = true
+                    indicator.text = "Loading translations..."
+
+                    fetchApiData(e, apiSettings) { event, list ->
+                        writeTranslations(event, list)
+                    }
+                }
+            }
+
+            ProgressManager.getInstance().run(task)
         }
-    }
-
-    private fun getProgressIndicator(): ProgressIndicator {
-        val indicator = ProgressManager.getInstance().progressIndicator ?: ProgressIndicatorBase()
-
-        indicator.isIndeterminate = true
-        indicator.text = "Fetching translations..."
-
-        return indicator
     }
 
     private fun requireTranslationKey(project: Project, invalidKey: Boolean = false): String? {
@@ -106,10 +100,9 @@ class QuickTranslationAction: AnAction() {
         return true
     }
 
-    private fun fetchApiData(e: AnActionEvent, apiSettings: ApiSettings) {
-        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-            val list = Api.fetchTranslations(apiSettings)
-            writeTranslations(e, list)
+    private fun fetchApiData(e: AnActionEvent, apiSettings: ApiSettings, onComplete: (AnActionEvent, List<Translation>) -> Unit) {
+        runBlocking {
+            onComplete(e, Api.fetchTranslations(apiSettings))
         }
     }
 
