@@ -5,9 +5,12 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.util.ProgressIndicatorBase
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.vcs.changes.RunnableBackgroundableWrapper
 import com.intellij.openapi.vfs.VirtualFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,10 +42,22 @@ class QuickTranslationAction: AnAction() {
         }
 
         if (validateSettings(project, apiSettings)) {
-            ProgressManager.getInstance().runProcessWithProgressSynchronously({
-                fetchApiData(e, apiSettings)
-            }, "Loading...", false, project)
+            ProgressManager.getInstance().runProcessWithProgressAsynchronously(
+                RunnableBackgroundableWrapper(project, "Loading...") {
+                    fetchApiData(e, apiSettings)
+                },
+                getProgressIndicator()
+            )
         }
+    }
+
+    private fun getProgressIndicator(): ProgressIndicator {
+        val indicator = ProgressManager.getInstance().progressIndicator ?: ProgressIndicatorBase()
+
+        indicator.isIndeterminate = true
+        indicator.text = "Fetching translations..."
+
+        return indicator
     }
 
     private fun requireTranslationKey(project: Project, invalidKey: Boolean = false): String? {
