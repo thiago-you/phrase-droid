@@ -36,6 +36,6 @@ PhraseApp plugin for use in <strong>Android Studio</strong>.Useful for multi-lan
     <img src="https://github.com/thiago-you/phrase-droid/assets/23344256/04107dcb-9e72-4a72-97aa-57f2d58f1746" width="350"/>
 </p>
 
-[Check out our Plugin](https://github.com/thiago-you/docs/plugin.html)
+[Check out our Plugin](https://github.com/thiago-you/phrase-droid/docs/plugin.html)
 <br>
-[Download the plugin on IntelliJ Marketplace](https://github.com/thiago-you/docs/marketplace.html)
+[Download the plugin on IntelliJ Marketplace](https://github.com/thiago-you/phrase-droid/docs/marketplace.html)
