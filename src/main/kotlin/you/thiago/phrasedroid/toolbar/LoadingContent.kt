@@ -17,7 +17,6 @@ class LoadingContent : ToolwindowContent() {
         loading.layout = BoxLayout(loading, BoxLayout.Y_AXIS)
         loading.add(buildLoadingContent())
         loading.add(buildProgressContent())
-        // loading.add(buildMessageContent())
 
         contentPanel.add(loading, BorderLayout.CENTER)
     }

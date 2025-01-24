@@ -13,7 +13,6 @@ import you.thiago.phrasedroid.data.ResourceFile
 import you.thiago.phrasedroid.state.FlashState
 import you.thiago.phrasedroid.util.TranslationUtil
 import java.awt.BorderLayout
-import java.awt.Color
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Font
@@ -195,7 +194,7 @@ class TranslationsContent(
             FlashState.translations = translations
             FlashState.isAllowUpdateSelected = isAllowUpdateSelected
 
-            ActionUtil.invokeAction(WriteTranslationsAction(), event.dataContext, event.place, null, null)
+            ActionUtil.invokeAction(WriteTranslationsAction(), event, null)
         }
     }
 
@@ -214,7 +213,7 @@ class TranslationsContent(
             fileNameLabel.font = fileNameLabel.font.deriveFont(Font.BOLD)
 
             if (resource.translation.isEmpty()) {
-                fileNameLabel.foreground = Color.RED
+                fileNameLabel.foreground = JBColor.RED
             }
 
             val fileNamePanel = JPanel(BorderLayout())

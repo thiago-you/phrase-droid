@@ -25,6 +25,7 @@
         <li>Escape translation Key when has HTML data with markup.</li>
         <li>Auto escape invalid ' (quote) char on resource strings.</li>
         <li>Add or replace Keys on string XML resources.</li>
+        <li>Auto resolve GIT conflict on Strings.</li>
     </ul>
 
     <h2>How to use</h2>
@@ -47,6 +48,18 @@
 }
     </pre>
   ]]></description>
+
+    <change-notes><![CDATA[
+<h2>New Features</h2>
+<ul>
+  <li>Add auto GIT conflict resolve</li>
+  <li>Upgrade plugin for unlimited build release</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+  <li>Update deprecated and vulnerable dependencies</li>
+</ul>
+]]></change-notes>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
@@ -99,6 +112,17 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="control shift O"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift O"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control shift O"/>
+            </action>
+
+            <action
+                    id="you.thiago.phrasedroid.ResolveConflictAction"
+                    class="you.thiago.phrasedroid.ResolveConflictAction"
+                    text="Resolve conflicts"
+                    description="Resolve GIT conflicts on strings resources"
+                    icon="AllIcons.Nodes.PropertyRead">
+                <keyboard-shortcut keymap="$default" first-keystroke="control shift i"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift i"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control shift i"/>
             </action>
 
             <add-to-group group-id="ToolsMenu" anchor="first"/>

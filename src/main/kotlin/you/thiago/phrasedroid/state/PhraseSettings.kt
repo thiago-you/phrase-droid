@@ -2,7 +2,6 @@ package you.thiago.phrasedroid.state
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
-import you.thiago.phrasedroid.data.ResourceFile
 
 @Service
 @State(
