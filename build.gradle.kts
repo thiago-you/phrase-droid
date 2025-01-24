@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "you.thiago"
-version = "1.2-SNAPSHOT"
+version = "1.3"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0")
-    implementation("io.ktor:ktor-client-core:2.3.1")
+    implementation("io.ktor:ktor-client-core:2.3.13")
     implementation("io.ktor:ktor-client-cio:2.3.5")
     implementation("io.ktor:ktor-client-json:2.1.2")
     implementation("io.ktor:ktor-client-serialization-jvm:2.1.2")
@@ -39,6 +39,7 @@ tasks {
         sourceCompatibility = "17"
         targetCompatibility = "17"
     }
+
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
     }
