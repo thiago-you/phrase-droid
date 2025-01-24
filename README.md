@@ -8,6 +8,7 @@ PhraseApp plugin for use in <strong>Android Studio</strong>.Useful for multi-lan
 - Escape translation Key when has HTML data with markup.
 - Auto escape invalid ' (quote) char on resource strings.
 - Add or replace Keys on string XML resources.
+- Auto resolve GIT conflict on Strings.
 
 ### How to use
 - Configure the API Key and Project ID on the settings page.
