@@ -46,11 +46,6 @@ tasks {
         kotlinOptions.jvmTarget = "17"
     }
 
-    patchPluginXml {
-        sinceBuild.set("232")
-        untilBuild.set("242.*")
-    }
-
     signPlugin {
         certificateChain.set(providers.environmentVariable("CERTIFICATE_CHAIN"))
         privateKey.set(providers.environmentVariable("PRIVATE_KEY"))
