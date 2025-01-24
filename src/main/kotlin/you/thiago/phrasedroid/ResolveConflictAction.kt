@@ -94,15 +94,34 @@ class ResolveConflictAction: AnAction() {
 
     private fun removeConflictsFromFile(file: VirtualFile) {
         file.findDocument()?.also { document ->
-            val content = document.text
-            val conflictRegex = Regex("\n<<<<<<<|\n=======|\n>>>>>>>", RegexOption.DOT_MATCHES_ALL)
+            val content = document.text.takeIf { it.isNotBlank() } ?: return
 
-            if (conflictRegex.containsMatchIn(content)) {
-                content.replace(conflictRegex, "").also { updatedContent ->
+            if (content.contains(Regex("<<<<<<<|=======|>>>>>>>"))) {
+                removeConflictMarks(removeDuplicatedLines(content)).also { updatedContent ->
                     document.setText(updatedContent)
                 }
             }
         }
+    }
+
+    private fun removeDuplicatedLines(content: String): String {
+        val conflictRegex = Regex("(?s)(<<<<<<<.*?=======)(.*?)(>>>>>>>)")
+
+        val updatedContent = conflictRegex.replace(content) { matchResult ->
+            val (firstPart, secondPart) = matchResult.groupValues[1] to matchResult.groupValues[2]
+
+            val firstLines = firstPart.lines().filter { it.isNotBlank() }
+            val secondLines = secondPart.lines().filter { it.isNotBlank() }
+
+            (firstLines + secondLines).distinct().joinToString("\n")
+        }
+
+        return updatedContent
+    }
+
+    private fun removeConflictMarks(content: String): String {
+        val conflictRegex = Regex("\n<<<<<<<|\n=======|\n>>>>>>>")
+        return content.replace(conflictRegex, "")
     }
 
     private fun getFilesPath(): List<String> {
