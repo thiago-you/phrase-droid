@@ -4,6 +4,8 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -11,16 +13,12 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.Messages
-import kotlinx.coroutines.runBlocking
-import you.thiago.phrasedroid.data.ApiSettings
-import you.thiago.phrasedroid.state.AppState
-import you.thiago.phrasedroid.util.FileUtil
-import you.thiago.phrasedroid.util.JsonUtil
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.findDocument
 import you.thiago.phrasedroid.util.NotificationUtil
 
 class ResolveConflictAction: AnAction() {
-
-    private val settingsFilePath by lazy { AppState().getInstance().state.settingsFilePath }
 
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.EDT
@@ -40,7 +38,7 @@ class ResolveConflictAction: AnAction() {
                 indicator.isIndeterminate = true
                 indicator.text = "Resolving conflicts..."
 
-                resolveConflicts(e, ::actionResponse)
+                resolveConflicts(e)
             }
         }
 
@@ -57,47 +55,83 @@ class ResolveConflictAction: AnAction() {
         return result
     }
 
-    private fun loadSettings(project: Project): ApiSettings? {
-        val file = if (settingsFilePath.isNotEmpty()) {
-            FileUtil.getVirtualFileByPath(settingsFilePath)
-        } else {
-            FileUtil.getVirtualFileByProjectRelativePath(project)
-        }
-
-        return file?.let { JsonUtil.readConfig(it) }
-    }
-
-    private fun resolveConflicts(e: AnActionEvent, onComplete: (AnActionEvent, Boolean) -> Unit) {
+    private fun resolveConflicts(e: AnActionEvent) {
         val project = e.project ?: return
-
-        var success = false
 
         try {
             ApplicationManager.getApplication().invokeLater {
-                success = removeConflicts(e)
+                executeAction(e)
             }
         } catch(e: Exception) {
             NotificationUtil.warning(project, "There was an unexpected error.", "PhraseDroid: Exception")
         }
-
-        runBlocking {
-            onComplete(e, success)
-        }
     }
 
-    private fun removeConflicts(e: AnActionEvent): Boolean {
-        val project = e.project ?: return false
-
-        return true
-    }
-
-    private fun actionResponse(e: AnActionEvent, success: Boolean) {
+    private fun executeAction(e: AnActionEvent) {
         val project = e.project ?: return
 
-        if (success) {
-            NotificationUtil.success(project, "Conflict resolve successfully!")
-        } else {
-            NotificationUtil.error(project, "There was an unexpected error.")
+        WriteCommandAction.runWriteCommandAction(project) {
+            runCatching {
+                writeResources(project)
+            }.onSuccess {
+                NotificationUtil.success(project, "Conflict resolve successfully!")
+            }.onFailure {
+                NotificationUtil.error(project, "There was an unexpected error.")
+            }
         }
     }
+
+    private fun writeResources(project: Project) {
+        getFilesPath().forEach { filePath ->
+            loadFile(project, filePath)
+                ?.takeIf { it.isValid }
+                ?.let { removeConflictsFromFile(it) }
+        }
+    }
+
+    private fun loadFile(project: Project, filePath: String): VirtualFile? {
+        return VfsUtil.findFileByIoFile(java.io.File(project.basePath + filePath), true)
+    }
+
+    private fun removeConflictsFromFile(file: VirtualFile) {
+        file.findDocument()?.also { document ->
+            val content = document.text
+            val conflictRegex = Regex("\n<<<<<<<|\n=======|\n>>>>>>>", RegexOption.DOT_MATCHES_ALL)
+
+            if (conflictRegex.containsMatchIn(content)) {
+                content.replace(conflictRegex, "").also { updatedContent ->
+                    document.setText(updatedContent)
+                }
+            }
+        }
+    }
+
+    private fun getFilesPath(): List<String> {
+        val suffixList = getFilesSuffix()
+
+        return suffixList.map { suffix ->
+            "/app/src/main/res/values$suffix/strings.xml"
+        }
+    }
+
+    private fun getFilesSuffix(): List<String> = listOf(
+        "-de-rDE",
+        "-en-rGB",
+        "-en-rCA",
+        "-es-rAR",
+        "-es-rCL",
+        "-es-rCO",
+        "-es-rMX",
+        "-es-rES",
+        "-fr-rFR",
+        "-fr-rCA",
+        "-it-rIT",
+        "-nl",
+        "-pt-rPT",
+        "-pt",
+        "-nl",
+        "-es",
+        "-pt",
+        "-fr-rFR"
+    )
 }
