@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -32,7 +31,7 @@ class ResolveConflictAction: AnAction() {
             return
         }
 
-        val task = object : Task.Backgroundable(project, "PhraseDroid", true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
+        val task = object : Task.Backgroundable(project, "PhraseDroid", true) {
             override fun run(indicator: ProgressIndicator) {
                 indicator.isIndeterminate = true
                 indicator.text = "Resolving conflicts..."

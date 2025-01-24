@@ -49,6 +49,18 @@
     </pre>
   ]]></description>
 
+    <change-notes><![CDATA[
+<h2>New Features</h2>
+<ul>
+  <li>Add auto GIT conflict resolve</li>
+  <li>Upgrade plugin for unlimited build release</li>
+</ul>
+<h2>Bug Fixes</h2>
+<ul>
+  <li>Update deprecated and vulnerable dependencies</li>
+</ul>
+]]></change-notes>
+
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>

@@ -1,9 +1,11 @@
 package you.thiago.phrasedroid.state
 
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.ProjectManager
 import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.Nullable
 import javax.swing.JComponent
+import javax.swing.JPanel
 
 /**
  * Provides controller functionality for application settings.
@@ -18,8 +20,11 @@ internal class AppSettingsConfigurable : Configurable {
 
     @Nullable
     override fun createComponent(): JComponent {
-        appSettings = AppSettingsComponent()
-        return appSettings!!.panel
+        val project = ProjectManager.getInstance().openProjects.firstOrNull()
+
+        appSettings = AppSettingsComponent(project)
+
+        return appSettings?.panel ?: JPanel()
     }
 
     override fun isModified(): Boolean {

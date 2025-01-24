@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -39,7 +38,7 @@ class QuickTranslationAction: AnAction() {
         }
 
         if (validateSettings(project, apiSettings)) {
-            val task = object : Task.Backgroundable(project, "PhraseDroid", true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
+            val task = object : Task.Backgroundable(project, "PhraseDroid", true) {
                 override fun run(indicator: ProgressIndicator) {
                     indicator.isIndeterminate = true
                     indicator.text = "Loading translations..."
@@ -160,7 +159,7 @@ class QuickTranslationAction: AnAction() {
             FlashState.translations = ResFileMapper.getResourceFilesList(translations)
             FlashState.isAllowUpdateSelected = true
 
-            ActionUtil.invokeAction(WriteTranslationsAction(), e.dataContext, e.place, null, null)
+            ActionUtil.invokeAction(WriteTranslationsAction(), e, null)
         }
     }
 }

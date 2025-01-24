@@ -1,6 +1,8 @@
 package you.thiago.phrasedroid.state
 
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.FormBuilder
@@ -17,7 +19,7 @@ import javax.swing.JPanel
 /**
  * Supports creating and managing a [JPanel] for the Settings Dialog.
  */
-class AppSettingsComponent {
+class AppSettingsComponent(private val project: Project?) {
 
     val panel: JPanel = JPanel()
 
@@ -35,10 +37,9 @@ class AppSettingsComponent {
         settingsFilePathField.textField.text = defaultFileRelativePath
 
         settingsFilePathField.addBrowseFolderListener(
-            "Select File",
-            "Select the JSON settings file",
-            null,
-            getFileChooseDescriptor()
+            project,
+            FileChooserDescriptorFactory.createSingleFileDescriptor(),
+            TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         )
 
         val inputLabel = JBLabel("Settings file path (JSON): ")
@@ -93,17 +94,6 @@ class AppSettingsComponent {
         set(newText) {
             settingsFilePathField.text = newText ?: String()
         }
-
-    private fun getFileChooseDescriptor(): FileChooserDescriptor {
-        return FileChooserDescriptor(
-            true,
-            false,
-            false,
-            false,
-            false,
-            false
-        )
-    }
 
     private fun getJsonTemplate(): String = "<pre style=\"padding: 3px 4px;\">${JsonTemplate.get()}</pre>"
 }

@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.22"
-    id("org.jetbrains.intellij") version "1.17.2"
+    id("org.jetbrains.intellij.platform") version "2.2.1"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
@@ -10,12 +10,24 @@ version = "1.3"
 
 repositories {
     mavenCentral()
+
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2024.3.2")
+        pluginVerifier()
+        zipSigner()
+    }
+
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0")
+
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0")
+
     implementation("io.ktor:ktor-client-core:2.3.13")
     implementation("io.ktor:ktor-client-cio:2.3.5")
     implementation("io.ktor:ktor-client-json:2.1.2")
@@ -24,17 +36,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:2.1.2")
 }
 
-// Configure Gradle IntelliJ Plugin
-// Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
-intellij {
-    version.set("2023.2.5")
-    type.set("IC") // Target IDE Platform
-
-    plugins.set(listOf())
-}
-
 tasks {
-    // Set the JVM compatibility versions
     withType<JavaCompile> {
         sourceCompatibility = "17"
         targetCompatibility = "17"
