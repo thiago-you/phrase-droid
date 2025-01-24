@@ -3,6 +3,7 @@ package you.thiago.phrasedroid.toolbar
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.JBColor
@@ -189,12 +190,13 @@ class TranslationsContent(
         return checkBoxPanel
     }
 
+    @Suppress("DEPRECATION")
     private fun executeWriteTranslationActions() {
         ApplicationManager.getApplication().invokeLater {
             FlashState.translations = translations
             FlashState.isAllowUpdateSelected = isAllowUpdateSelected
 
-            ActionUtil.invokeAction(WriteTranslationsAction(), event, null)
+            ActionUtil.invokeAction(WriteTranslationsAction(), event.dataContext, event.place, null, null)
         }
     }
 

@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -154,12 +155,13 @@ class QuickTranslationAction: AnAction() {
         }
     }
 
-    private fun executeWriteTranslationActions(e: AnActionEvent, translations: List<Translation>) {
+    @Suppress("DEPRECATION")
+    private fun executeWriteTranslationActions(event: AnActionEvent, translations: List<Translation>) {
         ApplicationManager.getApplication().invokeLater {
             FlashState.translations = ResFileMapper.getResourceFilesList(translations)
             FlashState.isAllowUpdateSelected = true
 
-            ActionUtil.invokeAction(WriteTranslationsAction(), e, null)
+            ActionUtil.invokeAction(WriteTranslationsAction(), event.dataContext, event.place, null, null)
         }
     }
 }

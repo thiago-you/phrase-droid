@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "you.thiago"
-version = "1.3"
+version = "1.4"
 
 repositories {
     mavenCentral()
@@ -44,6 +44,10 @@ tasks {
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
+    }
+
+    patchPluginXml {
+        sinceBuild.set("224.3")
     }
 
     signPlugin {
