@@ -28,7 +28,7 @@ intellijPlatform {
                 types = listOf(IntelliJPlatformType.AndroidStudio)
                 channels = listOf(ProductRelease.Channel.RELEASE)
                 sinceBuild = "232"
-                untilBuild = "242.*"
+                untilBuild = "245.*"
             }
         }
     }
