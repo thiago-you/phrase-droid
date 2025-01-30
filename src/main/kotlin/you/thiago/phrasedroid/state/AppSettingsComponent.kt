@@ -1,5 +1,7 @@
 package you.thiago.phrasedroid.state
 
+import com.intellij.openapi.application.ApplicationInfo
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextComponentAccessor
@@ -32,14 +34,16 @@ class AppSettingsComponent(private val project: Project?) {
         panel.add(buildSettingsInputComponent(), 0)
     }
 
+    @Suppress("DEPRECATION")
     private fun buildSettingsInputComponent(): JPanel {
         settingsFilePathField.toolTipText = defaultFileRelativePath
         settingsFilePathField.textField.text = defaultFileRelativePath
 
         settingsFilePathField.addBrowseFolderListener(
-            project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor(),
-            TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+            "Select File",
+            "Select the JSON settings file",
+            null,
+            getFileChooseDescriptor()
         )
 
         val inputLabel = JBLabel("Settings file path (JSON): ")
@@ -94,6 +98,17 @@ class AppSettingsComponent(private val project: Project?) {
         set(newText) {
             settingsFilePathField.text = newText ?: String()
         }
+
+    private fun getFileChooseDescriptor(): FileChooserDescriptor {
+        return FileChooserDescriptor(
+            true,
+            false,
+            false,
+            false,
+            false,
+            false
+        )
+    }
 
     private fun getJsonTemplate(): String = "<pre style=\"padding: 3px 4px;\">${JsonTemplate.get()}</pre>"
 }
