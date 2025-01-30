@@ -119,8 +119,10 @@ class ResolveConflictAction: AnAction() {
     }
 
     private fun removeConflictMarks(content: String): String {
-        val conflictRegex = Regex("\n<<<<<<<|\n=======|\n>>>>>>>")
-        return content.replace(conflictRegex, "")
+        return content
+            .lineSequence()
+            .filterNot { it.contains("<<<<<<<") || it.contains("=======") || it.contains(">>>>>>>") }
+            .joinToString("\n")
     }
 
     private fun getFilesPath(): List<String> {
