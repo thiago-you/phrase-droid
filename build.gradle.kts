@@ -1,3 +1,6 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.22"
@@ -13,6 +16,21 @@ repositories {
 
     intellijPlatform {
         defaultRepositories()
+    }
+}
+
+intellijPlatform {
+    pluginVerification {
+        ides {
+            recommended()
+
+            select {
+                types = listOf(IntelliJPlatformType.AndroidStudio)
+                channels = listOf(ProductRelease.Channel.RELEASE)
+                sinceBuild = "232"
+                untilBuild = "242.*"
+            }
+        }
     }
 }
 
@@ -47,7 +65,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("224.3")
+        sinceBuild.set("232")
+        untilBuild.set("242.*")
     }
 
     signPlugin {
@@ -63,4 +82,8 @@ tasks {
 
 configurations.all {
     exclude("org.slf4j", "slf4j-api")
+}
+
+intellijPlatform.pluginVerification {
+    ides.ides(listOf("IC-2024.3.2"))
 }
