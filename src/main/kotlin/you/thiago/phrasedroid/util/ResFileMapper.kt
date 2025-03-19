@@ -175,7 +175,7 @@ object ResFileMapper {
     private fun List<ResourceFile>.sortList(): List<ResourceFile> {
         val sortedList = this
             .distinctBy { it.filename }
-            .sortedWith(compareBy({ it.translation.isEmpty() }, { it.language }))
+            .sortedWith(compareBy({ it.translation.isNotEmpty() }, { it.language }))
             .toMutableList()
 
         val firstItem  = sortedList.find { it.locale == "pt-BR" }
