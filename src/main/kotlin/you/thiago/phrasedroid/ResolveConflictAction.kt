@@ -107,12 +107,12 @@ class ResolveConflictAction: AnAction() {
         val conflictRegex = Regex("(?s)(<<<<<<<.*?=======)(.*?)(>>>>>>>)")
 
         val updatedContent = conflictRegex.replace(content) { matchResult ->
-            val (firstPart, secondPart) = matchResult.groupValues[1] to matchResult.groupValues[2]
+            val (firstPart, secondPart, endMarker) = matchResult.groupValues.drop(1)
 
             val firstLines = firstPart.lines().filter { it.isNotBlank() }
             val secondLines = secondPart.lines().filter { it.isNotBlank() }
 
-            (firstLines + secondLines).distinct().joinToString("\n")
+            (firstLines + secondLines).distinct().joinToString("\n") + "\n" + endMarker
         }
 
         return updatedContent
@@ -134,6 +134,7 @@ class ResolveConflictAction: AnAction() {
     }
 
     private fun getFilesSuffix(): List<String> = listOf(
+        "",
         "-de-rDE",
         "-en-rGB",
         "-en-rCA",
