@@ -26,6 +26,7 @@
         <li>Auto escape invalid ' (quote) char on resource strings.</li>
         <li>Add or replace Keys on string XML resources.</li>
         <li>Auto resolve GIT conflict on Strings.</li>
+        <li>Easy remove any translation Key from resources.</li>
     </ul>
 
     <h2>How to use</h2>
