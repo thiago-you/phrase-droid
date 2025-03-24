@@ -53,6 +53,8 @@
 <h2>New Features</h2>
 <ul>
   <li>Add auto GIT conflict resolve</li>
+  <li>Add GIT conflict auto resolve</li>
+  <li>Add translation KEY remove action</li>
   <li>Upgrade plugin for unlimited build release</li>
 </ul>
 <h2>Bug Fixes</h2>
@@ -123,6 +125,17 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="control shift i"/>
                 <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift i"/>
                 <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control shift i"/>
+            </action>
+
+            <action
+                    id="you.thiago.phrasedroid.DeleteTranslationAction"
+                    class="you.thiago.phrasedroid.DeleteTranslationAction"
+                    text="Delete translation Key"
+                    description="Delete translation key from strings resources"
+                    icon="AllIcons.Nodes.PropertyRead">
+                <keyboard-shortcut keymap="$default" first-keystroke="control shift d"/>
+                <keyboard-shortcut keymap="Mac OS X" first-keystroke="control shift d"/>
+                <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="control shift d"/>
             </action>
 
             <add-to-group group-id="ToolsMenu" anchor="first"/>
