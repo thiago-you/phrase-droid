@@ -1,7 +1,9 @@
 package you.thiago.phrasedroid.data
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Translation(
     @JsonProperty("id") val id: String,
     @JsonProperty("content") val content: String,

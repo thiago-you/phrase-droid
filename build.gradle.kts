@@ -3,13 +3,13 @@ import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.22"
+    id("org.jetbrains.kotlin.jvm") version "2.1.0"
     id("org.jetbrains.intellij.platform") version "2.2.1"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
 }
 
 group = "you.thiago"
-version = "1.8"
+version = "1.9"
 
 repositories {
     mavenCentral()
@@ -28,7 +28,7 @@ intellijPlatform {
                 types = listOf(IntelliJPlatformType.AndroidStudio)
                 channels = listOf(ProductRelease.Channel.RELEASE)
                 sinceBuild = "232"
-                untilBuild = "245.*"
+                untilBuild = "251.*"
             }
         }
     }
@@ -36,7 +36,7 @@ intellijPlatform {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2024.3.2")
+        intellijIdeaCommunity("2025.1.1")
         pluginVerifier()
         zipSigner()
     }
@@ -66,7 +66,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("232")
-        untilBuild.set("245.*")
+        untilBuild.set("251.*")
     }
 
     signPlugin {
