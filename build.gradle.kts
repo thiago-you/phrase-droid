@@ -1,5 +1,6 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("java")
@@ -9,7 +10,7 @@ plugins {
 }
 
 group = "you.thiago"
-version = "1.9"
+version = "2.0"
 
 repositories {
     mavenCentral()
@@ -61,12 +62,12 @@ tasks {
     }
 
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
     }
 
     patchPluginXml {
         sinceBuild.set("232")
-        untilBuild.set("251.*")
+        untilBuild.set("255.*")
     }
 
     signPlugin {
