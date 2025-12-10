@@ -1,13 +1,14 @@
 package you.thiago.phrasedroid.data
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class ApiSettings @JsonCreator constructor(
-    @JsonProperty("id") var id: String? = "",
-    @JsonProperty("key") var key: String? = "",
-    @JsonProperty("contact_email") var contactEmail: String? = "",
-    @JsonProperty("contact_url") var contactUrl: String? = ""
+data class ApiSettings(
+    @SerializedName("id")
+    var id: String? = "",
+    @SerializedName("key")
+    var key: String? = "",
+    @SerializedName("contact_email")
+    var contactEmail: String? = "",
+    @SerializedName("contact_url")
+    var contactUrl: String? = ""
 )

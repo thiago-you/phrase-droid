@@ -44,15 +44,14 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
+    implementation("com.google.code.gson:gson:2.12.1")
 
     implementation("io.ktor:ktor-client-core:2.3.13")
     implementation("io.ktor:ktor-client-cio:2.3.5")
     implementation("io.ktor:ktor-client-json:2.1.2")
     implementation("io.ktor:ktor-client-serialization-jvm:2.1.2")
     implementation("io.ktor:ktor-client-content-negotiation:2.1.2")
-    implementation("io.ktor:ktor-serialization-jackson:2.1.2")
+    implementation("io.ktor:ktor-serialization-gson:2.1.2")
 }
 
 tasks {

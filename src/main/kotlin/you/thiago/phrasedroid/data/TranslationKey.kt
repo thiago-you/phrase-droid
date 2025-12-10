@@ -1,17 +1,24 @@
 package you.thiago.phrasedroid.data
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class TranslationKey(
-    @JsonProperty("id") val id: String,
-    @JsonProperty("name") val name: String,
-    @JsonProperty("description") val description: String?,
-    @JsonProperty("name_hash") val nameHash: String,
-    @JsonProperty("plural") val plural: Boolean,
-    @JsonProperty("max_characters_allowed") val maxCharactersAllowed: Int,
-    @JsonProperty("tags") val tags: List<String>,
-    @JsonProperty("created_at") val createdAt: String,
-    @JsonProperty("updated_at") val updatedAt: String
+    @SerializedName("id")
+    val id: String,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("description")
+    val description: String?,
+    @SerializedName("name_hash")
+    val nameHash: String,
+    @SerializedName("plural")
+    val plural: Boolean,
+    @SerializedName("max_characters_allowed")
+    val maxCharactersAllowed: Int,
+    @SerializedName("tags")
+    val tags: List<String>,
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("updated_at")
+    val updatedAt: String
 )

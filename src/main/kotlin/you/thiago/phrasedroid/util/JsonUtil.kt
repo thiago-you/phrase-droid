@@ -1,16 +1,15 @@
 package you.thiago.phrasedroid.util
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.intellij.openapi.vfs.VirtualFile
 import you.thiago.phrasedroid.data.ApiSettings
 import you.thiago.phrasedroid.data.Translation
 import you.thiago.phrasedroid.data.TranslationKey
+import java.lang.reflect.Type
 import java.nio.charset.StandardCharsets
 
 object JsonUtil {
-    private val objectMapper: ObjectMapper = JsonMapper.objectMapper
-
     fun readConfig(file: VirtualFile): ApiSettings? {
         try {
             val json = String(file.contentsToByteArray(), StandardCharsets.UTF_8)
@@ -23,8 +22,8 @@ object JsonUtil {
 
     fun readTranslationKeyInfo(json: String): TranslationKey? {
         try {
-            val typeReference: TypeReference<List<TranslationKey>> = object : TypeReference<List<TranslationKey>>() {}
-            val list = fromJson(json, typeReference)
+            val typeOfT = object : TypeToken<List<TranslationKey>>() {}.type
+            val list = fromJson<List<TranslationKey>?>(json, typeOfT)
 
             if (list?.isNotEmpty() == true) {
                 return list.first()
@@ -39,8 +38,8 @@ object JsonUtil {
 
     fun readTranslations(json: String): List<Translation>? {
         try {
-            val typeReference: TypeReference<List<Translation>> = object : TypeReference<List<Translation>>() {}
-            return fromJson(json, typeReference)
+            val typeOfT = object : TypeToken<List<Translation>>() {}.type
+            return fromJson(json, typeOfT)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
@@ -49,16 +48,16 @@ object JsonUtil {
 
     private fun <T> fromJson(json: String?, valueType: Class<T>?): T? {
         try {
-            return objectMapper.readValue(json, valueType)
+            return Gson().fromJson(json, valueType)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
         }
     }
 
-    private fun <T> fromJson(json: String?, typeReference: TypeReference<T>?): T? {
+    private fun <T> fromJson(json: String?, typeOfT: Type?): T? {
         try {
-            return objectMapper.readValue(json, typeReference)
+            return Gson().fromJson(json, typeOfT)
         } catch (e: Exception) {
             e.printStackTrace()
             return null
